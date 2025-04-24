@@ -1,0 +1,1 @@
+Logica para consumir APIs: authService, reportService, userService, etc.

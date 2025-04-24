@@ -1,0 +1,1 @@
+Funciones especiales que permiten usar caracteristicas de React, como UseState, UseEffect, etc. Y en esta carpeta se desarrollan los custom hooks, que son funciones que encapsulan logica que se va a reutilizar en varios componentes 

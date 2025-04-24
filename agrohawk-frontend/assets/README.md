@@ -1,0 +1,1 @@
+Imagenes y recursos generales

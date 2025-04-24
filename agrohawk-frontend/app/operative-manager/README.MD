@@ -1,0 +1,1 @@
+Paginas y/o componentes del gerente operativo

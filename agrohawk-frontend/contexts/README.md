@@ -1,0 +1,1 @@
+Contextos globales. Permite compartir datos entre componentes sin necesidad de pasarlos por props de uno en uno. Ejemplo tipico, AuthContext
