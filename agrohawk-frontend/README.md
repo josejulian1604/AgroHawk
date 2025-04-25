@@ -86,6 +86,13 @@ This template comes with [Tailwind CSS](https://tailwindcss.com/) already config
 
 Built with ❤️ using React Router.
 
+# GITFLOW
+- main → versión en producción
+- develop → versión en desarrollo
+- feature/* → nuevas funcionalidades
+- fix/* → correcciones
+- release/* → versiones listas para pasar a producción
+
 # Estructura general del proyecto
 /agrohawk-frontend
 ├── /app                           # Carpeta principal para rutas y layout
