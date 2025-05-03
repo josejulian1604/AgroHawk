@@ -1,12 +1,16 @@
 // Login file.
 import React from "react";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 export default function Login() {
+  const [showPassword, setShowPassword] = useState(false);
+
   return (
     <div className="min-h-screen flex">
-      {/* Sección izquierda: imagen */}
-      <div className="w-1/2 hidden lg:block">
+      {/* Left Section: Image */}
+      <div className="w-2/3 hidden lg:block">
         <img
           src="/dron.jpg"
           alt="Drone de fumigación"
@@ -14,22 +18,22 @@ export default function Login() {
         />
       </div>
 
-      {/* Sección derecha: formulario */}
-      <div className="w-full lg:w-1/2 flex flex-col justify-center items-center px-8 py-12 bg-white">
-        <div className="max-w-md w-full space-y-6">
-          {/* Logo y título */}
+      {/*  Right Section: Login Form */}
+      <div className="w-full lg:w-1/3 flex flex-col justify-between px-8 py-8 bg-white rounded-r-2xl">
+        <div className="flex flex-col gap-8">
+          {/* Title */}
           <div className="text-center">
             <img
               src="/logo.png"
               alt="AgroHawk"
-              className="mx-auto h-20 w-auto"
+              className="mx-auto h-20 object-contain"
             />
-            <h2 className="mt-6 text-2xl font-bold text-gray-800">
+            <h2 className="mt-4 text-2xl font-bold text-gray-800">
               Bienvenido
             </h2>
           </div>
 
-          {/* Formulario */}
+          {/* Form */}
           <form className="space-y-4">
             <div>
               <label
@@ -41,8 +45,8 @@ export default function Login() {
               <input
                 type="email"
                 id="email"
-                className="w-full px-4 py-2 mt-1 border rounded-md"
-                placeholder="usuario@ejemplo.com"
+                className="w-full px-4 py-2 mt-1 bg-gray-100 border border-gray-300 rounded-md placeholder-gray-500 text-gray-800"
+                placeholder="usuario@agrohawk.com"
               />
             </div>
 
@@ -55,17 +59,20 @@ export default function Login() {
               </label>
               <div className="relative">
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   id="password"
-                  className="w-full px-4 py-2 mt-1 border rounded-md pr-10"
+                  className="w-full px-4 py-2 mt-1 bg-gray-100 border border-gray-300 rounded-md pr-10 placeholder-gray-500 text-gray-800"
                   placeholder="********"
                 />
-                {/* Puedes agregar lógica para mostrar/ocultar */}
-                <span className="absolute right-3 top-3 cursor-pointer">
-                  👁️
+                <span
+                  className="absolute right-3 top-3 cursor-pointer text-gray-600 text-lg"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
                 </span>
               </div>
             </div>
+
 
             <div className="flex justify-between items-center">
               <label className="flex items-center space-x-2">
@@ -87,11 +94,19 @@ export default function Login() {
               Iniciar Sesión
             </button>
           </form>
-
-          <div className="text-center text-xs text-gray-400 mt-8">
-            © 2025 AgroHawk.
-          </div>
         </div>
+
+        {/* Footer */}
+        <hr className="my-6 border-gray-200" />
+        <div className="text-center text-xs text-gray-400">
+          <img
+            src="/logo.png"
+            alt="AgroHawk"
+            className="mx-auto h-6 mb-1 object-contain"
+          />
+          © 2025 AgroHawk.
+        </div>
+        
       </div>
     </div>
   );
