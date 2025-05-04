@@ -1,6 +1,7 @@
 // File to reset password.
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const ForgotPassword = () => {
     const navigate = useNavigate();
@@ -45,6 +46,13 @@ const ForgotPassword = () => {
           >
             Enviar instrucciones
           </button>
+          <div className="text-center mt-4">
+            <span className="text-sm text-gray-600">¿Recordaste tu contraseña? </span>
+            <Link to="/login" className="text-blue-600 hover:underline font-medium">
+              Volver al Inicio de Sesión
+            </Link>
+          </div>
+
         </form>
       </div>
     </div>
