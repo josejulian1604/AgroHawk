@@ -3,6 +3,7 @@ import HeroSection from "./components/HeroSection";
 import OurServices from "./components/OurServices";
 import RecentProjects from "./components/RecentProjects";
 import VideoCarousel from "./components/VideoCarousel";
+import AboutUs from "./components/AboutUs";
 
 export function Welcome() {
   return (
@@ -12,6 +13,7 @@ export function Welcome() {
       <OurServices />
       <RecentProjects />
       <VideoCarousel />
+      <AboutUs />
       {/* Aquí más secciones: Servicios, Acerca de, etc */}
     </>
   );
