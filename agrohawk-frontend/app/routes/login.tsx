@@ -23,11 +23,13 @@ export default function Login() {
         <div className="flex flex-col gap-8">
           {/* Title */}
           <div className="text-center">
-            <img
-              src="/logo.png"
-              alt="AgroHawk"
-              className="mx-auto h-20 object-contain"
-            />
+            <Link to="/">
+              <img
+                src="/logo.png"
+                alt="AgroHawk"
+                className="mx-auto h-20 object-contain"
+              />
+            </Link>
             <h2 className="mt-4 text-2xl font-bold text-gray-800">
               Bienvenido
             </h2>

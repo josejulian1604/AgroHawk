@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { UserCircle } from "lucide-react";
-import { Link } from "react-router-dom"; // solo si usas React Router
+import { Link } from "react-router-dom";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
