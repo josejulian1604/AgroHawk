@@ -3,6 +3,7 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { jwtDecode } from "jwt-decode"; 
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -29,8 +30,29 @@ export default function Login() {
       }
   
       const data = await response.json();
-      localStorage.setItem("token", data.token); // Guardar el token
-      navigate("/"); // Redirigir al home u otra ruta
+      const token = data.token;
+      localStorage.setItem("token", data.token); 
+
+      // Decodificar token para obtener el rol
+      const decoded: any = jwtDecode(token);
+      const rol = decoded.rol;
+
+      switch (rol) {
+        case "admin":
+          navigate("/admin");
+          break;
+        case "piloto":
+          navigate("/piloto");
+          break;
+        case "socio":
+          navigate("/socio");
+          break;
+        case "gerente":
+          navigate("/gerente");
+          break;
+        default:
+          navigate("/");
+      }
     } catch (err: any) {
       setError(err.message);
     }
