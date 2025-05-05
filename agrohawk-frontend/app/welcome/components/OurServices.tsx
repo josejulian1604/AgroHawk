@@ -55,7 +55,7 @@ const services: Service[] = [
 
 export default function OurServices() {
   return (
-    <section className="bg-white text-black py-20 px-6 md:px-12 lg:px-24">
+    <section id="servicios" className="bg-white text-black py-20 px-6 md:px-12 lg:px-24">
       <p className="text-center text-teal-400 text-lg font-semibold mb-2">
         Nuestros Servicios
       </p>

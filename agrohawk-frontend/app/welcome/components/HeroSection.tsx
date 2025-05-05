@@ -3,6 +3,7 @@ import React from "react";
 export default function HeroSection() {
   return (
     <section
+      id="inicio"
       className="relative bg-[#0c0c0c]/90 text-white w-full px-6 py-12 md:py-20 overflow-hidden"
       style={{ fontFamily: '"Roboto Serif", serif' }}
     >
@@ -31,21 +32,24 @@ export default function HeroSection() {
           <p className="text-2xl md:text-3xl text-teal-300 font-semibold">
             Fumigación y monitoreo con drones de última generación.
           </p>
-          <button className="mt-4 bg-white text-black font-medium px-5 py-2 rounded-full shadow hover:bg-gray-200 flex items-space-bewtween gap-3">
-            <span className="w-6 h-6 flex items-center justify-center bg-black text-white rounded-full">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-3 h-3"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-              </svg>
-            </span>
-            <span>Ver Servicios</span>
-          </button>
+          <a href="#servicios">
+            <button className="mt-4 bg-white text-black font-medium px-5 py-2 rounded-full shadow hover:bg-gray-200 flex items-center gap-3">
+              <span className="w-6 h-6 flex items-center justify-center bg-black text-white rounded-full">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-3 h-3"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
+              </span>
+              <span>Ver Servicios</span>
+            </button>
+          </a>
+
 
 
         </div>

@@ -5,6 +5,7 @@ import RecentProjects from "./components/RecentProjects";
 import VideoCarousel from "./components/VideoCarousel";
 import AboutUs from "./components/AboutUs";
 import ContactUs from "./components/ContactUs";
+import Footer from "./components/Footer";
 
 export function Welcome() {
   return (
@@ -16,7 +17,7 @@ export function Welcome() {
       <VideoCarousel />
       <AboutUs />
       <ContactUs />
-      {/* Aquí más secciones: Servicios, Acerca de, etc */}
+      <Footer />
     </>
   );
 }
