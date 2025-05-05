@@ -4,6 +4,7 @@ import OurServices from "./components/OurServices";
 import RecentProjects from "./components/RecentProjects";
 import VideoCarousel from "./components/VideoCarousel";
 import AboutUs from "./components/AboutUs";
+import ContactUs from "./components/ContactUs";
 
 export function Welcome() {
   return (
@@ -14,6 +15,7 @@ export function Welcome() {
       <RecentProjects />
       <VideoCarousel />
       <AboutUs />
+      <ContactUs />
       {/* Aquí más secciones: Servicios, Acerca de, etc */}
     </>
   );
