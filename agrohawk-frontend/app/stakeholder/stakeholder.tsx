@@ -12,12 +12,29 @@ export default function Stakeholder() {
   const [nombreUsuario, setNombreUsuario] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [menuAbierto, setMenuAbierto] = useState(false);
+  const [rolUsuario, setRolUsuario] = useState("");
+
+  const traducirRol = (rol: string) => {
+    switch (rol) {
+      case "admin":
+        return "Administrador";
+      case "gerente":
+        return "Gerente Operativo";
+      case "piloto":
+        return "Piloto";
+      case "socio":
+        return "Socio";
+      default:
+        return rol.charAt(0).toUpperCase() + rol.slice(1); // capitaliza cualquier otro
+    }
+  };  
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
       const decoded = jwtDecode<DecodedToken>(token);
       setNombreUsuario(decoded.nombre);
+      setRolUsuario(decoded.rol);
     }
   }, []);
 
@@ -42,6 +59,9 @@ export default function Stakeholder() {
           <img src="/logo-round.png" alt="Logo" className="mx-auto h-14 object-contain" />
           <span className="text-2xl font-bold">AgroHawk</span>
         </div>
+
+        <div className="mx-auto ml-auto text-lg font-semibold">{traducirRol(rolUsuario)}</div>
+
         <div className="relative flex items-center gap-2">
           <span className="hidden sm:inline">Bienvenido, {nombreUsuario}</span>
 
