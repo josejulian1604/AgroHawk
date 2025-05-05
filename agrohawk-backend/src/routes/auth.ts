@@ -25,6 +25,7 @@ router.post("/login", async (req: Request, res: any) => {
         id: usuario._id,
         correo: usuario.correo,
         rol: usuario.rol,
+        nombre: usuario.nombre,
       },
       process.env.JWT_SECRET || "supersecreto",
       { expiresIn: "2h" }
