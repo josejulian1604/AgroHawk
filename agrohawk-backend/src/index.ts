@@ -2,6 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import usersRouter from "./routes/users";
+import authRouter from "./routes/auth";
 
 dotenv.config();
 
@@ -27,3 +28,4 @@ mongoose
   });
 
   app.use("/api/users", usersRouter);
+  app.use("/api/auth", authRouter);
