@@ -1,11 +1,41 @@
 // Login file.
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
+  const [correo, setCorreo] = useState("");
+  const [contraseña, setContraseña] = useState("");
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("User: ", correo);
+    try {
+      const response = await fetch("http://localhost:3000/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ correo, contraseña }),
+      });
+  
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.mensaje || "Error al iniciar sesión");
+      }
+  
+      const data = await response.json();
+      localStorage.setItem("token", data.token); // Guardar el token
+      navigate("/"); // Redirigir al home u otra ruta
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+  
 
   return (
     <div className="min-h-screen flex">
@@ -36,7 +66,7 @@ export default function Login() {
           </div>
 
           {/* Form */}
-          <form className="space-y-4">
+          <form className="space-y-4" onSubmit={handleLogin}>
             <div>
               <label
                 htmlFor="email"
@@ -47,6 +77,8 @@ export default function Login() {
               <input
                 type="email"
                 id="email"
+                value={correo}
+                onChange={(e) => setCorreo(e.target.value)}
                 className="w-full px-4 py-2 mt-1 bg-gray-100 border border-gray-300 rounded-md placeholder-gray-500 text-gray-800"
                 placeholder="usuario@agrohawk.com"
               />
@@ -63,6 +95,8 @@ export default function Login() {
                 <input
                   type={showPassword ? "text" : "password"}
                   id="password"
+                  value={contraseña}
+                  onChange={(e) => setContraseña(e.target.value)}
                   className="w-full px-4 py-2 mt-1 bg-gray-100 border border-gray-300 rounded-md pr-10 placeholder-gray-500 text-gray-800"
                   placeholder="********"
                 />
@@ -95,6 +129,7 @@ export default function Login() {
             >
               Iniciar Sesión
             </button>
+            {error && <p className="text-red-500 text-sm">{error}</p>}
           </form>
         </div>
 

@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import usersRouter from "./routes/users";
 import authRouter from "./routes/auth";
+import cors from "cors";
 
 dotenv.config();
 
@@ -27,5 +28,6 @@ mongoose
     console.error("❌ Error al conectar a MongoDB:", err);
   });
 
+  app.use(cors()); 
   app.use("/api/users", usersRouter);
   app.use("/api/auth", authRouter);
