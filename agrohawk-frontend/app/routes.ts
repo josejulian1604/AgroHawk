@@ -25,4 +25,8 @@ export default [index("routes/home.tsx"),
     path: "gerente",
     file: "operative-manager/manager.tsx",
   },
+  {
+    path: "admin-management",
+    file: "admin/AdminCrud.tsx",
+  },
 ] satisfies RouteConfig;
