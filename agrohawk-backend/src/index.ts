@@ -4,6 +4,8 @@ import dotenv from "dotenv";
 import usersRouter from "./routes/users";
 import authRouter from "./routes/auth";
 import cors from "cors";
+import adminsRouter from "./routes/admin";
+
 
 dotenv.config();
 
@@ -31,3 +33,4 @@ mongoose
   app.use(cors()); 
   app.use("/api/users", usersRouter);
   app.use("/api/auth", authRouter);
+  app.use("/api/admins", adminsRouter);
