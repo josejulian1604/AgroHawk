@@ -6,7 +6,7 @@ const router = Router();
 
 // Ruta para registrar un nuevo usuario
 router.post("/", async (req: Request, res: Response): Promise<any> => {
-  const { nombre, correo, contraseña, rol } = req.body;
+  const { nombre, apellido1, apellido2, correo, contraseña, rol, cedula, telefono } = req.body;
 
   try {
     // Verificar si ya existe un usuario con ese correo
@@ -21,9 +21,13 @@ router.post("/", async (req: Request, res: Response): Promise<any> => {
     // Crear nuevo usuario
     const nuevoUsuario = new Usuario({
         nombre,
+        apellido1,
+        apellido2,
         correo,
         contraseña: hashedPassword,
         rol,
+        cedula,
+        telefono,
       });
 
     await nuevoUsuario.save();
@@ -38,7 +42,7 @@ router.post("/", async (req: Request, res: Response): Promise<any> => {
 // Obtener todos los usuarios
 router.get("/", async (req: Request, res: Response) => {
     try {
-      const usuarios = await Usuario.find();
+      const usuarios = await Usuario.find().select("-contraseña");
       res.status(200).json(usuarios);
     } catch (error) {
       res.status(500).json({ mensaje: "Error al obtener usuarios", error });
@@ -48,7 +52,7 @@ router.get("/", async (req: Request, res: Response) => {
 // Obtener un usuario por ID
 router.get("/:id", async (req: Request, res: any) => {
     try {
-      const usuario = await Usuario.findById(req.params.id);
+      const usuario = await Usuario.findById(req.params.id).select("-contraseña");
   
       if (!usuario) {
         return res.status(404).json({ mensaje: "Usuario no encontrado" });
@@ -63,10 +67,10 @@ router.get("/:id", async (req: Request, res: any) => {
 // Actualizar un usuario por ID (incluyendo hash de contraseña si cambia)
 router.put("/:id", async (req: Request, res: Response): Promise<any> => {
     try {
-      const { nombre, correo, contraseña, rol } = req.body;
+      const { nombre, apellido1, apellido2, correo, contraseña, rol, cedula, telefono } = req.body;
   
       // Preparar objeto con los campos a actualizar
-      const actualizaciones: any = { nombre, correo, rol };
+      const actualizaciones: any = { nombre, apellido1, apellido2, correo, rol, cedula, telefono };
   
       // Si se incluye una nueva contraseña, la hasheamos
       if (contraseña) {

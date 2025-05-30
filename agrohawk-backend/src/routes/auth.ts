@@ -26,6 +26,10 @@ router.post("/login", async (req: Request, res: any) => {
         correo: usuario.correo,
         rol: usuario.rol,
         nombre: usuario.nombre,
+        apellido1: usuario.apellido1,
+        apellido2: usuario.apellido2,
+        cedula: usuario.cedula,   
+        telefono: usuario.telefono
       },
       process.env.JWT_SECRET || "supersecreto",
       { expiresIn: "2h" }
@@ -37,8 +41,12 @@ router.post("/login", async (req: Request, res: any) => {
       usuario: {
         id: usuario._id,
         nombre: usuario.nombre,
+        apellido1: usuario.apellido1,
+        apellido2: usuario.apellido2,
         correo: usuario.correo,
         rol: usuario.rol,
+        cedula: usuario.cedula,    
+        telefono: usuario.telefono,
       },
     });
   } catch (error) {
