@@ -14,6 +14,7 @@ type Props = {
 type DecodedToken = {
   nombre: string;
   rol: string;
+  apellido1: string;
 };
 
 export default function AdminLayout({ children, current }: Props) {

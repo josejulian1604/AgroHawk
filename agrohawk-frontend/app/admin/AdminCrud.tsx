@@ -5,6 +5,8 @@ import { FaRegEdit, FaTrashAlt } from "react-icons/fa";
 type Admin = {
   _id: string;
   nombre: string;
+  apellido1: string;
+  apellido2: string;
   cedula: string;
   telefono: string;
   correo: string;
@@ -42,12 +44,12 @@ export default function AdminCrud() {
           >
             <div>
               <h2 className="text-xl font-semibold mb-2">
-                Administrador {index + 1}
+                {admin.nombre + " " + admin.apellido1}
               </h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                 <div>
                   <p className="font-bold">Nombre Completo</p>
-                  <p>{admin.nombre}</p>
+                  <p>{admin.nombre + " " + admin.apellido1 + " " +  admin.apellido2}</p>
                 </div>
                 <div>
                   <p className="font-bold">Cédula</p>
