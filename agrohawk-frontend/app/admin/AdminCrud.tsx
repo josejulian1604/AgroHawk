@@ -168,6 +168,50 @@ export default function AdminCrud() {
     }
   };
 
+  const handleEliminarAdmin = async (id: string) => {
+    const confirmar = window.confirm("¿Estás seguro de que deseas eliminar este administrador?");
+    if (!confirmar) return;
+
+    try {
+      const response = await fetch(`/api/users/${id}`, {
+        method: "DELETE",
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) throw new Error(data.mensaje || "Error al eliminar administrador");
+
+      // Eliminar del estado
+      setAdmins((prev) => prev.filter((admin) => admin._id !== id));
+    } catch (error: any) {
+      console.error(error);
+      alert(error.message || "Error al eliminar");
+    }
+  };
+
+  const [adminAEliminar, setAdminAEliminar] = useState<Admin | null>(null);
+  const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false);
+
+  const confirmarEliminacion = async () => {
+    if (!adminAEliminar) return;
+    
+    try {
+      const response = await fetch(`/api/users/${adminAEliminar._id}`, {
+        method: "DELETE",
+      });
+    
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.mensaje || "Error al eliminar");
+    
+      setAdmins((prev) => prev.filter((a) => a._id !== adminAEliminar._id));
+      setMostrarConfirmacion(false);
+      setAdminAEliminar(null);
+    } catch (error: any) {
+      console.error(error);
+      alert(error.message || "Error al eliminar");
+    }
+  };
+
 
   return (
     <AdminLayout current="Administradores">
@@ -243,7 +287,12 @@ export default function AdminCrud() {
               >
                 <FaRegEdit size={18} />
               </button>
-              <button className="bg-[#1F384C] p-3 rounded-full text-white hover:bg-[#8b1c1c]">
+              <button className="bg-[#1F384C] p-3 rounded-full text-white hover:bg-[#8b1c1c]"
+                onClick={() => {
+                  setAdminAEliminar(admin);
+                  setMostrarConfirmacion(true);
+                }}
+              >
                 <FaTrashAlt size={18} />
               </button>
             </div>
@@ -332,6 +381,33 @@ export default function AdminCrud() {
           </div>
         </div>
       )}
+
+      {mostrarConfirmacion && adminAEliminar && (
+        <div className="fixed inset-0 bg-[rgba(0,0,0,0.3)] backdrop-blur-sm flex justify-center items-center z-50 text-gray-800">
+          <div className="bg-white p-6 rounded-lg w-full max-w-sm text-center border border-gray-800">
+            <h2 className="text-xl font-bold mb-2">¿Desea eliminar a este administrador?</h2>
+            <p className="text-sm text-gray-600 mb-6">
+              Se eliminará permanentemente: <br />
+              <strong>{adminAEliminar.nombre} {adminAEliminar.apellido1}</strong>
+            </p>
+            <div className="flex justify-center gap-4">
+              <button
+                className="border border-gray-500 px-4 py-2 rounded text-gray-700 hover:bg-gray-100"
+                onClick={() => setMostrarConfirmacion(false)}
+              >
+                Cancelar
+              </button>
+              <button
+                className="bg-[#1F384C] text-white px-4 py-2 rounded hover:bg-[#27478c]"
+                onClick={confirmarEliminacion}
+              >
+                Aceptar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
 
     </AdminLayout>
   );
