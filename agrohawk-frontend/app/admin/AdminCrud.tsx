@@ -97,13 +97,76 @@ export default function AdminCrud() {
     const correoRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!correoRegex.test(formData.correo)) nuevosErrores.push("El correo no es válido");
 
-    if (formData.contraseña.length < 6) nuevosErrores.push("La contraseña debe tener al menos 6 caracteres");
+    if (!modoEdicion && formData.contraseña.length < 6) {
+      nuevosErrores.push("La contraseña debe tener al menos 6 caracteres");
+    }
     if (formData.cedula.length < 9) nuevosErrores.push("La Cédula debe ser en formato X 0XXX 0XXX");
     if (formData.telefono.length < 8) nuevosErrores.push("El número de teléfono debe contener al menos 8 dígitos.");
 
     return nuevosErrores;
   };
 
+  const [modoEdicion, setModoEdicion] = useState(false);
+  const [adminEnEdicionId, setAdminEnEdicionId] = useState<string | null>(null);
+  const handleGuardarAdmin = async () => {
+    const erroresValidados = validarCampos();
+
+    if (erroresValidados.length > 0) {
+      setErrores(erroresValidados);
+      return;
+    }
+
+    try {
+      const url = adminEnEdicionId
+        ? `/api/users/${adminEnEdicionId}`
+        : "/api/users";
+
+      const method = adminEnEdicionId ? "PUT" : "POST";
+
+      const payload = {
+        ...formData,
+        ...(adminEnEdicionId ? {} : { rol: "admin" }), 
+      };
+
+      const response = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) throw new Error(data.mensaje || "Error al guardar administrador");
+
+      if (adminEnEdicionId) {
+        // actualizar en la lista
+        setAdmins((prev) =>
+          prev.map((a) => (a._id === adminEnEdicionId ? data.usuario : a))
+        );
+      } else {
+        // crear nuevo
+        setAdmins((prev) => [...prev, data.usuario]);
+      }
+
+      // resetear todo
+      setShowModal(false);
+      setModoEdicion(false);
+      setAdminEnEdicionId(null);
+      setErrores([]);
+      setFormData({
+        nombre: "",
+        apellido1: "",
+        apellido2: "",
+        cedula: "",
+        telefono: "",
+        correo: "",
+        contraseña: "",
+      });
+    } catch (error: any) {
+      console.error(error);
+      setErrores([error.message]);
+    }
+  };
 
 
   return (
@@ -160,7 +223,24 @@ export default function AdminCrud() {
               </div>
             </div>
             <div className="ml-auto flex flex-col gap-3">
-              <button className="bg-[#1F384C] p-3 rounded-full text-white hover:bg-[#27478c]">
+              <button
+                className="bg-[#1F384C] p-3 rounded-full text-white hover:bg-[#27478c]"
+                onClick={() => {
+                  setFormData({
+                    nombre: admin.nombre,
+                    apellido1: admin.apellido1,
+                    apellido2: admin.apellido2,
+                    cedula: admin.cedula,
+                    telefono: admin.telefono,
+                    correo: admin.correo,
+                    contraseña: "", 
+                  });
+                  setErrores([]);
+                  setAdminEnEdicionId(admin._id);
+                  setModoEdicion(true);
+                  setShowModal(true);
+                }}
+              >
                 <FaRegEdit size={18} />
               </button>
               <button className="bg-[#1F384C] p-3 rounded-full text-white hover:bg-[#8b1c1c]">
@@ -231,6 +311,7 @@ export default function AdminCrud() {
                 type="password"
                 placeholder="Contraseña"
                 value={formData.contraseña}
+                disabled={modoEdicion}
                 onChange={(e) => setFormData({ ...formData, contraseña: e.target.value })}
               />
               <div className="flex justify-end gap-3 mt-4">
@@ -242,9 +323,9 @@ export default function AdminCrud() {
                 </button>
                 <button
                   className="bg-[#1F384C] text-white px-4 py-2 rounded"
-                  onClick={handleCrearAdmin}
+                  onClick={handleGuardarAdmin}
                 >
-                  Crear
+                  {modoEdicion ? "Guardar Cambios" : "Crear"}
                 </button>
               </div>
             </div>
