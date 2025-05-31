@@ -62,6 +62,12 @@ export default function AdminLayout({ children, current }: Props) {
       {/* Navbar */}
       <nav className="bg-[#1F384C] text-white px-6 py-4 flex items-center justify-between">
         <div className="flex items-center space-x-4">
+          <button
+            className="lg:hidden mr-2 text-white bg-blue-800 p-2 rounded-md shadow-md hover:bg-[#1F389C] transition-colors duration-200"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+          >
+            {sidebarOpen ? <FaTimes size={20} /> : <FaBars size={20} />}
+          </button>
           <img src="/logo-round.png" alt="Logo" className="mx-auto h-14 object-contain" />
           <span className="text-2xl font-bold">AgroHawk</span>
         </div>
@@ -94,6 +100,15 @@ export default function AdminLayout({ children, current }: Props) {
             sidebarOpen ? "translate-x-0" : "-translate-x-full"
           } fixed z-50 top-0 left-0 min-h-screen w-64 bg-gray-100 p-4 border-r shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:shadow-none`}
         >
+          <button
+            className="absolute top-4 left-4 z-50 text-white bg-[#1F384C] p-2 rounded-md shadow hover:bg-[#1F389C] transition-colors duration-200 lg:hidden"
+            onClick={() => setSidebarOpen(false)}
+            aria-label="Cerrar menú"
+          >
+            <FaTimes size={24} />
+          </button>
+
+
           <nav className="space-y-4 mt-16 lg:mt-0">
             <div className="space-y-2">
               <SidebarButton label="Proyectos" icon={<FaFolderOpen />} active={current === "Proyectos"} to="/admin" />
@@ -111,13 +126,7 @@ export default function AdminLayout({ children, current }: Props) {
           </nav>
         </aside>
 
-        {/* Botón hamburguesa */}
-        <button
-          className="lg:hidden absolute top-4 left-2 z-50 text-white bg-blue-800 p-2 rounded-md shadow-md"
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-        >
-          {sidebarOpen ? <FaTimes size={20} /> : <FaBars size={20} />}
-        </button>
+        
 
         {/* Contenido específico */}
         <main className="flex-1 p-8 bg-gray-50">
