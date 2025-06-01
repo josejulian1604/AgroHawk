@@ -118,7 +118,7 @@ export default function AdminLayout({ children, current }: Props) {
             <hr className="my-4 border-gray-300" />
             <div className="space-y-2">
               <SidebarButton label="Administradores" icon={<FaUserShield />} active={current === "Administradores"} to="/admin-management" />
-              <SidebarButton label="Gerente Operativo" icon={<FaUserTie />} active={current === "Gerente"} to="/admin" />
+              <SidebarButton label="Gerente Operativo" icon={<FaUserTie />} active={current === "Gerente"} to="/gerente-management" />
               <SidebarButton label="Pilotos" icon={<FaUserAlt />} active={current === "Pilotos"} to="/admin" />
               <SidebarButton label="Socios" icon={<FaUsers />} active={current === "Socios"} to="/admin" />
               <SidebarButton label="Calendario" icon={<FaCalendarAlt />} active={current === "Calendario"} to="/admin" />
