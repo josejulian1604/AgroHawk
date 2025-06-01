@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import AdminLayout from "../../components/AdminLayout";
 import { FaRegEdit, FaTrashAlt, FaPlus } from "react-icons/fa";
 
-type Gerente = {
+type Socio = {
   _id: string;
   nombre: string;
   apellido1: string;
@@ -12,24 +12,24 @@ type Gerente = {
   correo: string;
 };
 
-export default function GerenteCrud() {
-  const [gerentes, setGerentes] = useState<Gerente[]>([]);
+export default function SocioCrud() {
+  const [socios, setSocios] = useState<Socio[]>([]);
 
   useEffect(() => {
-    const obtenerGerentes = async () => {
+    const obtenerSocios = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/gerentes");
+        const response = await fetch("http://localhost:3000/api/socios");
         if (!response.ok) {
-          throw new Error("Error al obtener gerentes operativos.");
+          throw new Error("Error al obtener socios.");
         }
         const data = await response.json();
-        setGerentes(data);
+        setSocios(data);
       } catch (error) {
         console.error("Error:", error);
       }
     };
 
-    obtenerGerentes();
+    obtenerSocios();
   }, []);
 
   const [showModal, setShowModal] = useState(false);
@@ -66,9 +66,9 @@ export default function GerenteCrud() {
   };
 
   const [modoEdicion, setModoEdicion] = useState(false);
-  const [gerenteEnEdicionId, setGerenteEnEdicionId] = useState<string | null>(null);
+  const [socioEnEdicionId, setSocioEnEdicionId] = useState<string | null>(null);
   
-  const handleGuardarGerente = async () => {
+  const handleGuardarSocio = async () => {
     const erroresValidados = validarCampos();
 
     if (erroresValidados.length > 0) {
@@ -77,15 +77,15 @@ export default function GerenteCrud() {
     }
 
     try {
-      const url = gerenteEnEdicionId
-        ? `/api/users/${gerenteEnEdicionId}`
+      const url = socioEnEdicionId
+        ? `/api/users/${socioEnEdicionId}`
         : "/api/users";
 
-      const method = gerenteEnEdicionId ? "PUT" : "POST";
+      const method = socioEnEdicionId ? "PUT" : "POST";
 
       const payload = {
         ...formData,
-        ...(gerenteEnEdicionId ? {} : { rol: "gerente" }), 
+        ...(socioEnEdicionId ? {} : { rol: "socio" }), 
       };
 
       const response = await fetch(url, {
@@ -96,21 +96,21 @@ export default function GerenteCrud() {
 
       const data = await response.json();
 
-      if (!response.ok) throw new Error(data.mensaje || "Error al guardar gerente operativo.");
+      if (!response.ok) throw new Error(data.mensaje || "Error al guardar socio.");
 
-      if (gerenteEnEdicionId) {
-        setGerentes((prev) =>
-          prev.map((a) => (a._id === gerenteEnEdicionId ? data.usuario : a))
+      if (socioEnEdicionId) {
+        setSocios((prev) =>
+          prev.map((a) => (a._id === socioEnEdicionId ? data.usuario : a))
         );
       } else {
         // crear nuevo
-        setGerentes((prev) => [...prev, data.usuario]);
+        setSocios((prev) => [...prev, data.usuario]);
       }
 
       // resetear todo
       setShowModal(false);
       setModoEdicion(false);
-      setGerenteEnEdicionId(null);
+      setSocioEnEdicionId(null);
       setErrores([]);
       setFormData({
         nombre: "",
@@ -127,23 +127,23 @@ export default function GerenteCrud() {
     }
   };
 
-  const [gerenteAEliminar, setGerenteAEliminar] = useState<Gerente | null>(null);
+  const [socioAEliminar, setSocioAEliminar] = useState<Socio | null>(null);
   const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false);
 
   const confirmarEliminacion = async () => {
-    if (!gerenteAEliminar) return;
+    if (!socioAEliminar) return;
     
     try {
-      const response = await fetch(`/api/users/${gerenteAEliminar._id}`, {
+      const response = await fetch(`/api/users/${socioAEliminar._id}`, {
         method: "DELETE",
       });
     
       const data = await response.json();
       if (!response.ok) throw new Error(data.mensaje || "Error al eliminar");
     
-      setGerentes((prev) => prev.filter((a) => a._id !== gerenteAEliminar._id));
+      setSocios((prev) => prev.filter((a) => a._id !== socioAEliminar._id));
       setMostrarConfirmacion(false);
-      setGerenteAEliminar(null);
+      setSocioAEliminar(null);
     } catch (error: any) {
       console.error(error);
       alert(error.message || "Error al eliminar");
@@ -152,9 +152,9 @@ export default function GerenteCrud() {
 
 
   return (
-    <AdminLayout current="Gerentes Operativos">
+    <AdminLayout current="Socios">
       <div className="flex justify-between">
-        <h1 className="text-2xl font-bold mb-6 text-gray-800">Gerentes Operativos</h1>
+        <h1 className="text-2xl font-bold mb-6 text-gray-800">Socios</h1>
         <button
             className="bg-[#1F384C] w-10 h-10 flex items-center justify-center rounded-full text-white hover:bg-[#27478c]"
             onClick={() => {
@@ -176,31 +176,31 @@ export default function GerenteCrud() {
         </button>
       </div>
       <div className="space-y-6">
-        {gerentes.map((gerente, index) => (
+        {socios.map((socio, index) => (
           <div
-            key={gerente._id}
+            key={socio._id}
             className="bg-white p-6 rounded-lg shadow border flex justify-normal items-center text-gray-800"
           >
             <div>
               <h2 className="text-xl font-semibold mb-2">
-                {gerente.nombre + " " + gerente.apellido1}
+                {socio.nombre + " " + socio.apellido1}
               </h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                 <div>
                   <p className="font-bold">Nombre Completo</p>
-                  <p>{gerente.nombre + " " + gerente.apellido1 + " " +  gerente.apellido2}</p>
+                  <p>{socio.nombre + " " + socio.apellido1 + " " +  socio.apellido2}</p>
                 </div>
                 <div>
                   <p className="font-bold">Cédula</p>
-                  <p>{gerente.cedula}</p>
+                  <p>{socio.cedula}</p>
                 </div>
                 <div>
                   <p className="font-bold">Número de Teléfono</p>
-                  <p>{gerente.telefono}</p>
+                  <p>{socio.telefono}</p>
                 </div>
                 <div>
                   <p className="font-bold">Correo electrónico</p>
-                  <p>{gerente.correo}</p>
+                  <p>{socio.correo}</p>
                 </div>
               </div>
             </div>
@@ -209,16 +209,16 @@ export default function GerenteCrud() {
                 className="bg-[#1F384C] p-3 rounded-full text-white hover:bg-[#27478c]"
                 onClick={() => {
                   setFormData({
-                    nombre: gerente.nombre,
-                    apellido1: gerente.apellido1,
-                    apellido2: gerente.apellido2,
-                    cedula: gerente.cedula,
-                    telefono: gerente.telefono,
-                    correo: gerente.correo,
+                    nombre: socio.nombre,
+                    apellido1: socio.apellido1,
+                    apellido2: socio.apellido2,
+                    cedula: socio.cedula,
+                    telefono: socio.telefono,
+                    correo: socio.correo,
                     contraseña: "", 
                   });
                   setErrores([]);
-                  setGerenteEnEdicionId(gerente._id);
+                  setSocioEnEdicionId(socio._id);
                   setModoEdicion(true);
                   setShowModal(true);
                 }}
@@ -227,7 +227,7 @@ export default function GerenteCrud() {
               </button>
               <button className="bg-[#1F384C] p-3 rounded-full text-white hover:bg-[#8b1c1c]"
                 onClick={() => {
-                  setGerenteAEliminar(gerente);
+                  setSocioAEliminar(socio);
                   setMostrarConfirmacion(true);
                 }}
               >
@@ -240,7 +240,7 @@ export default function GerenteCrud() {
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 text-gray-800">
           <div className="bg-white p-6 rounded-lg w-full max-w-md text-gray-800">
-            <h2 className="text-xl font-bold mb-4 ">Agregar Gerente Operativo</h2>
+            <h2 className="text-xl font-bold mb-4 ">Agregar Socio</h2>
             {errores.length > 0 && (
               <div className="bg-red-100 text-red-800 p-3 rounded mb-4">
                 <ul className="list-disc list-inside text-sm">
@@ -310,7 +310,7 @@ export default function GerenteCrud() {
                 </button>
                 <button
                   className="bg-[#1F384C] text-white px-4 py-2 rounded"
-                  onClick={handleGuardarGerente}
+                  onClick={handleGuardarSocio}
                 >
                   {modoEdicion ? "Guardar Cambios" : "Crear"}
                 </button>
@@ -320,13 +320,13 @@ export default function GerenteCrud() {
         </div>
       )}
 
-      {mostrarConfirmacion && gerenteAEliminar && (
+      {mostrarConfirmacion && socioAEliminar && (
         <div className="fixed inset-0 bg-[rgba(0,0,0,0.3)] backdrop-blur-sm flex justify-center items-center z-50 text-gray-800">
           <div className="bg-white p-6 rounded-lg w-full max-w-sm text-center border border-gray-800">
-            <h2 className="text-xl font-bold mb-2">¿Desea eliminar a este Gerente?</h2>
+            <h2 className="text-xl font-bold mb-2">¿Desea eliminar a este Socio?</h2>
             <p className="text-sm text-gray-600 mb-6">
               Se eliminará permanentemente: <br />
-              <strong>{gerenteAEliminar.nombre} {gerenteAEliminar.apellido1}</strong>
+              <strong>{socioAEliminar.nombre} {socioAEliminar.apellido1}</strong>
             </p>
             <div className="flex justify-center gap-4">
               <button
