@@ -33,4 +33,8 @@ export default [index("routes/home.tsx"),
     path: "gerente-management",
     file: "admin/GerenteCrud.tsx",
   },
+  {
+    path: "socio-management",
+    file: "admin/SocioCrud.tsx",
+  },
 ] satisfies RouteConfig;

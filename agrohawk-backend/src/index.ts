@@ -6,6 +6,7 @@ import authRouter from "./routes/auth";
 import cors from "cors";
 import adminsRouter from "./routes/admin";
 import gerentesRouter from "./routes/gerente";
+import sociosRouter from "./routes/socio";
 
 
 dotenv.config();
@@ -36,3 +37,4 @@ mongoose
   app.use("/api/auth", authRouter);
   app.use("/api/admins", adminsRouter);
   app.use("/api/gerentes", gerentesRouter);
+  app.use("/api/socios", sociosRouter);
