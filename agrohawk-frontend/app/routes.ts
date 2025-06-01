@@ -37,4 +37,8 @@ export default [index("routes/home.tsx"),
     path: "socio-management",
     file: "admin/SocioCrud.tsx",
   },
+  {
+    path: "piloto-management",
+    file: "admin/PilotoCrud.tsx",
+  },
 ] satisfies RouteConfig;
