@@ -32,7 +32,7 @@ export default function Navbar() {
           <div className="absolute right-0 mt-2 bg-white text-black rounded-md shadow-md w-40 z-50">
             <Link
               to="/login"
-              className="block px-4 py-2 hover:bg-gray-100 text-sm"
+              className="block px-4 py-2 hover:bg-gray-300 rounded-md text-sm"
               onClick={() => setMenuOpen(false)}
             >
               Iniciar sesión
