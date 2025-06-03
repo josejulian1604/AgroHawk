@@ -41,4 +41,8 @@ export default [index("routes/home.tsx"),
     path: "piloto-management",
     file: "admin/PilotoCrud.tsx",
   },
+  {
+    path: "proyectos/:id",
+    file: "admin/ProjectDetails.tsx",
+  },
 ] satisfies RouteConfig;
