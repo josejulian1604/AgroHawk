@@ -68,6 +68,25 @@ router.get("/", async (_req: Request, res: Response) => {
   }
 });
 
+// Obtener un proyecto por ID
+router.get("/:id", async (req: Request, res: any) => {
+  try {
+    const proyecto = await Proyecto.findById(req.params.id)
+      .populate("piloto", "nombre apellido1")
+      .populate("dron", "modelo placa")
+      .populate("creadoPor", "nombre apellido1");
+
+    if (!proyecto) {
+      return res.status(404).json({ mensaje: "Proyecto no encontrado." });
+    }
+
+    res.status(200).json(proyecto);
+  } catch (error) {
+    console.error("Error al obtener proyecto:", error);
+    res.status(500).json({ mensaje: "Error interno del servidor." });
+  }
+});
+
 // Actualizar.
 router.put("/:id", async (req: Request, res: any) => {
   try {
