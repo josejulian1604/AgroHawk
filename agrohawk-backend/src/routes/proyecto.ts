@@ -23,6 +23,11 @@ router.post("/", async (req: Request, res: any) => {
       return res.status(400).json({ mensaje: "Faltan campos obligatorios." });
     }
 
+    const fechaValida = new Date(fecha);
+    if (isNaN(fechaValida.getTime())) {
+      return res.status(400).json({ mensaje: "La fecha no es válida." });
+    }
+
     const pilotoExiste = await Usuario.findById(piloto);
     const dronExiste = await Dron.findById(dron);
     const gerenteExiste = await Usuario.findById(creadoPor);
@@ -35,7 +40,7 @@ router.post("/", async (req: Request, res: any) => {
       nombre,
       cliente,
       ubicacion,
-      fecha,
+      fecha: fechaValida,
       piloto,
       dron,
       creadoPor
