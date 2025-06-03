@@ -238,7 +238,7 @@ export default function SocioCrud() {
         ))}
       </div>
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 text-gray-800">
+        <div className="fixed inset-0 bg-[rgba(0,0,0,0.3)] backdrop-blur-sm bg-opacity-50 flex justify-center items-center z-50 text-gray-800">
           <div className="bg-white p-6 rounded-lg w-full max-w-md text-gray-800">
             <h2 className="text-xl font-bold mb-4 ">Agregar Socio</h2>
             {errores.length > 0 && (
