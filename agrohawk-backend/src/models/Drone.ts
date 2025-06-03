@@ -5,7 +5,7 @@ export interface IDron extends Document {
   numeroSerie: string;
   placa: string;
   proyectoAsignado: string;
-  estado: "Disponible" | "Ocupado" | "Mantenimiento";
+  estado: "disponible" | "ocupado" | "mantenimiento";
   observaciones?: string;
   creadoEn?: Date;
 }
@@ -16,9 +16,10 @@ const DronSchema: Schema = new Schema({
   placa: { type: String, required: true, unique: true },
   proyectoAsignado: { type: String, default: "N/A" },
   estado: {
-    type: String,
-    enum: ["Disponible", "Ocupado", "Mantenimiento"],
-    default: "Disponible",
+  type: String,
+  enum: ["disponible", "ocupado", "mantenimiento"],
+  lowercase: true,
+  required: true,
   },
   observaciones: { type: String, default: "" },
   creadoEn: { type: Date, default: Date.now },
