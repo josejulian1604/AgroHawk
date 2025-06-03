@@ -9,6 +9,7 @@ import gerentesRouter from "./routes/gerente";
 import sociosRouter from "./routes/socio";
 import pilotoRouter from "./routes/piloto";
 import dronRoutes from "./routes/dron";
+import proyectoRoutes from "./routes/proyecto";
 
 
 dotenv.config();
@@ -42,3 +43,4 @@ mongoose
   app.use("/api/socios", sociosRouter);
   app.use("/api/pilotos", pilotoRouter);
   app.use("/api/drones", dronRoutes);
+ app.use("/api/proyectos", proyectoRoutes);
