@@ -45,4 +45,8 @@ export default [index("routes/home.tsx"),
     path: "proyectos/:id",
     file: "admin/ProjectDetails.tsx",
   },
+  {
+    path: "inventario",
+    file: "admin/DronesInventory.tsx",
+  },
 ] satisfies RouteConfig;
