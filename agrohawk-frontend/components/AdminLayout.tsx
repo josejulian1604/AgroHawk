@@ -112,7 +112,7 @@ export default function AdminLayout({ children, current }: Props) {
           <nav className="space-y-4 mt-16 lg:mt-0">
             <div className="space-y-2">
               <SidebarButton label="Proyectos" icon={<FaFolderOpen />} active={current === "Proyectos"} to="/admin" />
-              <SidebarButton label="Inventario" icon={<FaBoxes />} active={current === "Inventario"} to="/admin" />
+              <SidebarButton label="Inventario" icon={<FaBoxes />} active={current === "Inventario"} to="/inventario" />
               <SidebarButton label="Documentos" icon={<FaFileAlt />} active={current === "Documentos"} to="/admin" />
             </div>
             <hr className="my-4 border-gray-300" />
