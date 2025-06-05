@@ -8,17 +8,8 @@ const router = express.Router();
 // Crear un nuevo proyecto
 router.post("/", async (req: Request, res: any) => {
   try {
-    const {
-      nombre,
-      cliente,
-      ubicacion,
-      fecha,
-      piloto,
-      dron,
-      creadoPor
-    } = req.body;
+    const { nombre, cliente, ubicacion, fecha, piloto, dron, creadoPor } = req.body;
 
-    // Validaciones
     if (!nombre || !cliente || !ubicacion || !fecha || !piloto || !dron || !creadoPor) {
       return res.status(400).json({ mensaje: "Faltan campos obligatorios." });
     }
@@ -43,32 +34,64 @@ router.post("/", async (req: Request, res: any) => {
       fecha: fechaValida,
       piloto,
       dron,
-      creadoPor
+      creadoPor,
     });
 
     await nuevoProyecto.save();
     res.status(201).json({ mensaje: "Proyecto creado con éxito", proyecto: nuevoProyecto });
-
   } catch (error) {
     console.error("Error al crear proyecto:", error);
     res.status(500).json({ mensaje: "Error interno del servidor" });
   }
 });
 
-// Obtener Todos.
+// Obtener proyectos por ID del piloto
+router.get("/piloto/:pilotoId", async (req: Request, res: any) => {
+  try {
+    const { pilotoId } = req.params;
+
+    const pilotoExiste = await Usuario.findById(pilotoId);
+    if (!pilotoExiste) {
+      return res.status(404).json({ mensaje: "Piloto no encontrado." });
+    }
+
+    const proyectos = await Proyecto.find({ piloto: pilotoId })
+      .populate("piloto", "nombre apellido1")
+      .populate("dron", "modelo placa")
+      .populate("creadoPor", "nombre apellido1");
+
+    if (proyectos.length === 0) {
+      return res.status(200).json({
+        mensaje: "No se encontraron proyectos para este piloto",
+        proyectos: [],
+      });
+    }
+
+    res.status(200).json({
+      mensaje: `Se encontraron ${proyectos.length} proyecto(s) para el piloto`,
+      proyectos,
+    });
+  } catch (error) {
+    console.error("Error al obtener proyectos por piloto:", error);
+    res.status(500).json({ mensaje: "Error interno del servidor." });
+  }
+});
+
+// Obtener todos los proyectos
 router.get("/", async (_req: Request, res: Response) => {
   try {
     const proyectos = await Proyecto.find()
       .populate("piloto", "nombre apellido1")
       .populate("dron", "modelo placa")
       .populate("creadoPor", "nombre apellido1");
+
     res.status(200).json(proyectos);
   } catch (error) {
     res.status(500).json({ mensaje: "Error al obtener proyectos", error });
   }
 });
 
-// Obtener un proyecto por ID
+// Esta debe ir al FINAL para evitar conflictos
 router.get("/:id", async (req: Request, res: any) => {
   try {
     const proyecto = await Proyecto.findById(req.params.id)
@@ -87,7 +110,7 @@ router.get("/:id", async (req: Request, res: any) => {
   }
 });
 
-// Actualizar.
+// Actualizar proyecto
 router.put("/:id", async (req: Request, res: any) => {
   try {
     const actualizado = await Proyecto.findByIdAndUpdate(req.params.id, req.body, {
@@ -106,13 +129,15 @@ router.put("/:id", async (req: Request, res: any) => {
   }
 });
 
-// Eliminar
+// Eliminar proyecto
 router.delete("/:id", async (req: Request, res: any) => {
   try {
     const eliminado = await Proyecto.findByIdAndDelete(req.params.id);
+
     if (!eliminado) {
       return res.status(404).json({ mensaje: "Proyecto no encontrado." });
     }
+
     res.status(200).json({ mensaje: "Proyecto eliminado correctamente" });
   } catch (error) {
     res.status(500).json({ mensaje: "Error al eliminar", error });
