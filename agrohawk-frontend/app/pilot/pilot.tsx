@@ -1,25 +1,14 @@
 import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   FaBars,
-  FaBoxes,
-  FaCalendarAlt,
-  FaFileAlt,
   FaFolderOpen,
   FaTimes,
-  FaUserAlt,
   FaWrench,
 } from "react-icons/fa";
-import {
-  FaProjectDiagram,
-  FaWarehouse,
-  FaRegFileAlt,
-  FaUserShield,
-  FaUserTie,
-  FaPlaneDeparture,
-  FaUsers,
-  FaRegCalendarAlt,
-} from "react-icons/fa";
+
+// Tipos
 
 type DecodedToken = {
   id: string;
@@ -33,6 +22,7 @@ type Proyecto = {
   fecha: string;
   cliente: string;
   ubicacion: string;
+  status: string;
   dron: {
     modelo: string;
     placa: string;
@@ -61,13 +51,12 @@ export default function Pilot() {
       case "socio":
         return "Socio";
       default:
-        return rol.charAt(0).toUpperCase() + rol.slice(1); // capitaliza cualquier otro
+        return rol.charAt(0).toUpperCase() + rol.slice(1);
     }
   };
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-
     if (token) {
       try {
         const decoded = jwtDecode<DecodedToken>(token);
@@ -75,20 +64,18 @@ export default function Pilot() {
         setRolUsuario(decoded.rol);
 
         if (!decoded.id) {
-          console.error("⚠️ El token no contiene _id");
+          console.error("⚠️ El token no contiene id");
           return;
         }
-        
+
         fetch(`http://localhost:3000/api/proyectos/piloto/${decoded.id}`)
           .then((res) => res.json())
           .then((data) => {
-            if (data.proyectos) {
-              setProyectos(data.proyectos);
-            } else if (Array.isArray(data)) {
-              setProyectos(data);
-            } else {
-              console.warn("Estructura inesperada:", data);
-            }
+            const proyectosFiltrados = (data.proyectos || data).filter(
+              (proyecto: Proyecto) =>
+                proyecto.status?.toLowerCase() !== "completado"
+            );
+            setProyectos(proyectosFiltrados);
           })
           .catch((error) => {
             console.error("Error al obtener proyectos del piloto:", error);
@@ -130,9 +117,9 @@ export default function Pilot() {
           <img
             src="/logo-round.png"
             alt="Logo"
-            className="mx-auto h-14 object-contain"
+            className="h-14 object-contain ml-6 sm:ml-10"
           />
-          <span className="text-2xl font-bold">AgroHawk</span>
+          <span className="text-xl sm:text-2xl font-bold">AgroHawk</span>
         </div>
 
         <div className="mx-auto ml-auto text-lg font-semibold">
@@ -171,28 +158,24 @@ export default function Pilot() {
 
       {/* Contenido principal */}
       <div className="flex flex-1">
-        {/* Sidebar permanente en pantallas grandes, o flotante en móviles */}
         <aside
-          className={`${
+          className={`$${
             sidebarOpen ? "translate-x-0" : "-translate-x-full"
           } fixed z-50 top-0 left-0 min-h-screen w-64 bg-gray-100 p-4 border-r shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:shadow-none`}
         >
           <nav className="space-y-4 mt-16 lg:mt-0">
-            {/* Grupo principal */}
             <div className="space-y-2">
               <SidebarButton label="Proyectos" icon={<FaFolderOpen />} active />
             </div>
 
             <hr className="my-4 border-gray-300" />
 
-            {/* Grupo secundario */}
             <div className="space-y-2">
               <SidebarButton label="Configuración" icon={<FaWrench />} />
             </div>
           </nav>
         </aside>
 
-        {/* Botón hamburguesa solo visible en pantallas pequeñas */}
         <button
           className="lg:hidden absolute top-4 left-2 z-50 text-white bg-blue-800 p-2 rounded-md shadow-md"
           onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -200,41 +183,44 @@ export default function Pilot() {
           {sidebarOpen ? <FaTimes size={20} /> : <FaBars size={20} />}
         </button>
 
-        {/* Sección principal */}
-        <main className="flex-1 p-8 bg-gray-50">
-          <h1 className="text-2xl font-bold mb-6 text-gray-800">Proyectos</h1>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {proyectos.map((proyecto) => (
-              <div
-                key={proyecto._id}
-                className="bg-white p-4 rounded-lg shadow border flex justify-between"
-              >
-                <div>
-                  <h2 className="text-xl font-semibold text-gray-800">
-                    {proyecto.nombre}
-                  </h2>
-                  <p className="text-sm text-gray-500">
-                    {new Date(proyecto.fecha).toLocaleDateString()}
-                  </p>
-                  <p className="mt-2 italic text-gray-700">
-                    Cliente: {proyecto.cliente}
-                    <br />
-                    Ubicación: {proyecto.ubicacion}
-                  </p>
-                  <div className="mt-4 border rounded p-2 bg-gray-100 text-center text-gray-800">
-                    <p className="text-sm">
-                      Dron: {proyecto.dron.modelo} ({proyecto.dron.placa})
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center">
-                  <div className="h-24 w-24 bg-gray-200 rounded-full flex items-center justify-center text-sm text-gray-800">
-                    Gráfico
-                  </div>
+        <main className="flex-1 px-4 py-6 sm:px-6 md:px-8 bg-gray-50 flex flex-col items-center">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-6 sm:mb-8 text-gray-800 text-center">
+            Proyecto Asignado
+          </h1>
+
+          {proyectos.length === 0 ? (
+            <p className="text-gray-600 text-base sm:text-lg italic text-center">
+              No hay proyectos asignados.
+            </p>
+          ) : (
+            <Link
+              to={`/proyecto/${proyectos[0]._id}`}
+              className="w-full max-w-2xl bg-white p-4 sm:p-6 rounded-lg shadow-md border flex flex-col sm:flex-row sm:justify-between gap-4 hover:shadow-lg transition"
+            >
+              <div className="flex-1">
+                <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-800">
+                  {proyectos[0].nombre}
+                </h2>
+                <p className="text-xs sm:text-sm text-gray-500">
+                  {new Date(proyectos[0].fecha).toLocaleDateString()}
+                </p>
+                <p className="mt-2 italic text-gray-700 text-sm sm:text-base">
+                  Cliente: {proyectos[0].cliente}
+                  <br />
+                  Ubicación: {proyectos[0].ubicacion}
+                </p>
+                <div className="mt-4 border rounded p-2 bg-gray-100 text-center text-gray-800 text-sm sm:text-base">
+                  Dron: {proyectos[0].dron.modelo} ({proyectos[0].dron.placa})
                 </div>
               </div>
-            ))}
-          </div>
+
+              <div className="flex justify-center sm:items-center">
+                <div className="h-24 w-24 sm:h-28 sm:w-28 bg-gray-200 rounded-full flex items-center justify-center text-sm text-gray-800">
+                  Gráfico
+                </div>
+              </div>
+            </Link>
+          )}
         </main>
       </div>
     </div>
