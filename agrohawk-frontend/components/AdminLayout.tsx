@@ -113,7 +113,7 @@ export default function AdminLayout({ children, current }: Props) {
             <div className="space-y-2">
               <SidebarButton label="Proyectos" icon={<FaFolderOpen />} active={current === "Proyectos"} to="/admin" />
               <SidebarButton label="Inventario" icon={<FaBoxes />} active={current === "Inventario"} to="/inventario" />
-              <SidebarButton label="Documentos" icon={<FaFileAlt />} active={current === "Documentos"} to="/admin" />
+              <SidebarButton label="Documentos" icon={<FaFileAlt />} active={current === "Documentos"} to="/documentos" />
             </div>
             <hr className="my-4 border-gray-300" />
             <div className="space-y-2">
