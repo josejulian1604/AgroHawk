@@ -169,6 +169,18 @@ export default function PilotProjectPage() {
               <SidebarButton label="Configuración" icon={<FaWrench />} />
             </div>
           </nav>
+
+          {/* Botón de salir */}
+          <div className="absolute bottom-6 left-4 w-[calc(100%-2rem)]">
+            <button
+              onClick={() => {
+                window.location.href = "/piloto"; // cambia si tu ruta es diferente
+              }}
+              className="w-full flex items-center justify-center px-3 py-2 bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition-colors font-semibold"
+            >
+              Salir
+            </button>
+          </div>
         </aside>
 
         <button
