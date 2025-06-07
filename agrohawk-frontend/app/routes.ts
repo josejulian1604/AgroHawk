@@ -49,4 +49,12 @@ export default [index("routes/home.tsx"),
     path: "inventario",
     file: "admin/DronesInventory.tsx",
   },
+  {
+    path: "documentos",
+    file: "admin/DocumentosHome.tsx",
+  },
+  {
+    path: "documentos/:id",
+    file: "admin/DocumentosPorTipo.tsx",
+  },
 ] satisfies RouteConfig;
