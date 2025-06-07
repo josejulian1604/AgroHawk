@@ -107,7 +107,7 @@ export default function PilotProjectPage() {
 
       <div className="flex flex-1">
         <aside
-          className={`$${
+          className={`${
             sidebarOpen ? "translate-x-0" : "-translate-x-full"
           } fixed z-50 top-0 left-0 min-h-screen w-64 bg-gray-100 p-4 border-r shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:shadow-none`}
         >
