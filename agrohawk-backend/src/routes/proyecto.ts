@@ -2,8 +2,16 @@ import express, { Request, Response } from "express";
 import Proyecto from "../models/Proyecto";
 import Usuario from "../models/Usuario";
 import Dron from "../models/Drone";
+import multer from "multer";
 
 const router = express.Router();
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
+
+// Definir la interfaz correctamente extendiendo Request
+interface MulterRequest extends Request {
+  files?: Express.Multer.File[];
+}
 
 // Crear un nuevo proyecto
 router.post("/", async (req: Request, res: any) => {
@@ -74,6 +82,39 @@ router.get("/piloto/:pilotoId", async (req: Request, res: any) => {
   } catch (error) {
     console.error("Error al obtener proyectos por piloto:", error);
     res.status(500).json({ mensaje: "Error interno del servidor." });
+  }
+});
+
+// Subir imágenes de boletas al proyecto - VERSIÓN CORREGIDA
+router.post("/:id/subir-boletas", upload.array("imagenes", 10), async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+
+    const proyecto = await Proyecto.findById(id);
+    if (!proyecto) {
+      res.status(404).json({ mensaje: "Proyecto no encontrado." });
+      return;
+    }
+
+    // Casting seguro del request para acceder a files
+    const files = (req as MulterRequest).files;
+    
+    if (!files || files.length === 0) {
+      res.status(400).json({ mensaje: "No se subieron imágenes." });
+      return;
+    }
+
+    const nuevasImagenes = files.map((file) =>
+      `data:${file.mimetype};base64,${file.buffer.toString("base64")}`
+    );
+
+    proyecto.imagenesBoletas.push(...nuevasImagenes);
+    await proyecto.save();
+
+    res.status(200).json({ mensaje: "Imágenes subidas correctamente.", imagenesBoletas: proyecto.imagenesBoletas });
+  } catch (error) {
+    console.error("Error al subir imágenes:", error);
+    res.status(500).json({ mensaje: "Error interno al subir imágenes." });
   }
 });
 
