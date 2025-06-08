@@ -132,6 +132,26 @@ router.get("/", async (_req: Request, res: Response) => {
   }
 });
 
+// Obtener reportes operativos desde proyectos
+router.get("/reportes-operativos", async (_req: Request, res: Response) => {
+  try {
+    const proyectos = await Proyecto.find({
+      $or: [
+        { imagenesBoletas: { $exists: true, $not: { $size: 0 } } },
+        { imagenRecorrido: { $exists: true, $ne: "" } },
+        { reportePDF: { $exists: true, $ne: "" } }
+      ]
+    })
+      .sort({ creadoEn: -1 })
+      .select("nombre imagenesBoletas imagenRecorrido reportePDF creadoEn");
+
+    res.json(proyectos);
+  } catch (err) {
+    console.error("Error al obtener reportes operativos:", err);
+    res.status(500).json({ mensaje: "Error al obtener reportes operativos" });
+  }
+});
+
 // Esta debe ir al FINAL para evitar conflictos
 router.get("/:id", async (req: Request, res: any) => {
   try {

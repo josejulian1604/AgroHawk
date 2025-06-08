@@ -16,24 +16,32 @@ export default function DocumentosPorTipo() {
   const [busqueda, setBusqueda] = useState("");
   const [loading, setLoading] = useState(true);
 
+  // Cargar documentos al montar o al cambiar de tipo
   useEffect(() => {
-    if (tipo) {
-      fetch(`/api/documentos/tipo/${tipo}`)
-        .then(res => res.json())
-        .then(data => {
-          setDocumentos(data);
-          setLoading(false);
-        });
-    }
+    if (!tipo) return;
+
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch(`/api/documentos/tipo/${tipo}`);
+        const data = await res.json();
+        setDocumentos(data);
+      } catch (error) {
+        console.error("Error al obtener documentos:", error);
+        setDocumentos([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, [tipo]);
 
-  const handleBuscar = () => {
-    if (!busqueda) return;
-
-    fetch(`/api/documentos/buscar?q=${busqueda}`)
-      .then(res => res.json())
-      .then(data => setDocumentos(data));
-  };
+  // Filtrar documentos localmente por nombre o fecha
+  const documentosFiltrados = documentos.filter((doc) =>
+    doc.titulo.toLowerCase().includes(busqueda.toLowerCase()) ||
+    doc.fechaSubida.includes(busqueda)
+  );
 
   return (
     <AdminLayout current="Documentos">
@@ -49,24 +57,21 @@ export default function DocumentosPorTipo() {
           onChange={(e) => setBusqueda(e.target.value)}
           className="border px-3 py-2 rounded w-full"
         />
-        <button onClick={handleBuscar} className="bg-blue-600 text-white px-4 py-2 rounded">
-          Buscar
-        </button>
       </div>
 
       {loading ? (
         <p className="text-gray-800">Cargando documentos...</p>
-      ) : documentos.length === 0 ? (
-        <p className="text-gray-800">No hay documentos disponibles.</p>
+      ) : documentosFiltrados.length === 0 ? (
+        <p className="text-gray-800">No hay documentos que coincidan con la búsqueda.</p>
       ) : (
         <ul className="space-y-4 text-gray-800">
-          {documentos.map((doc) => (
+          {documentosFiltrados.map((doc) => (
             <li key={doc._id} className="bg-white shadow p-4 rounded">
               <div className="flex justify-between items-center">
                 <div>
                   <h2 className="font-semibold">{doc.titulo}</h2>
                   <p className="text-sm text-gray-500">
-                    Subido: {new Date(doc.fechaSubida).toLocaleDateString()}
+                    Subido el {new Date(doc.fechaSubida).toLocaleDateString("es-CR")}
                   </p>
                 </div>
                 <a

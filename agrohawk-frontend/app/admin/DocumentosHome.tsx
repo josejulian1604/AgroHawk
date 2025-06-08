@@ -58,7 +58,13 @@ export default function DocumentosHome() {
           <div
             key={categoria.tipo}
             className="bg-white p-6 rounded-lg shadow cursor-pointer hover:shadow-md transition"
-            onClick={() => navigate(`/documentos/${categoria.tipo}`)}
+            onClick={() => {
+              if (categoria.tipo === "reporte-operativo") {
+                navigate("/documentos/reportes-operativos");
+              } else {
+                navigate(`/documentos/${categoria.tipo}`);
+              }
+            }}
           >
             <h2 className="text-lg font-semibold text-gray-900 mb-2">{categoria.nombre}</h2>
             <p className="text-gray-600">{categoria.descripcion}</p>
