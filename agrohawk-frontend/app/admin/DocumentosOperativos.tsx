@@ -34,8 +34,18 @@ export default function DocumentosOperativos() {
     const termino = busqueda.toLowerCase();
     return proyectos.filter((p) =>
       p.nombre.toLowerCase().includes(termino) ||
-      new Date(p.fecha).toLocaleDateString("es-CR").includes(termino) ||
-      new Date(p.creadoEn).toLocaleDateString("es-CR").includes(termino)
+      new Date(p.fecha).toLocaleDateString("es-CR",{
+        timeZone: "UTC",
+        day: "numeric",
+        month: "numeric",
+        year: "numeric"
+      }).toLowerCase().includes(termino) ||
+      new Date(p.creadoEn).toLocaleDateString("es-CR",{
+        timeZone: "UTC",
+        day: "numeric",
+        month: "numeric",
+        year: "numeric"
+      }).toLowerCase().includes(termino)
     );
   };
   console.log("Proyectos:", proyectos);
@@ -83,7 +93,12 @@ export default function DocumentosOperativos() {
                 <tr key={proy._id} className="border-b">
                   <td className="p-3 font-medium">{proy.nombre}</td>
                   <td className="p-3">
-                    {new Date(proy.fecha).toLocaleDateString("es-CR")}
+                    {new Date(proy.fecha).toLocaleDateString('es-CR', {
+                      timeZone: 'UTC',
+                      day: 'numeric',
+                      month: 'numeric',
+                      year: 'numeric'
+                    })}
                   </td>
                   <td className="p-3">
                     {proy.imagenesBoletas.map((img, i) => (

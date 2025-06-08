@@ -120,7 +120,12 @@ export default function ProjectDetails() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <p><strong>Cliente:</strong> {proyecto.cliente}</p>
             <p><strong>Ubicación:</strong> {proyecto.ubicacion}</p>
-            <p><strong>Fecha:</strong> {new Date(proyecto.fecha).toLocaleDateString("es-CR")}</p>
+            <p><strong>Fecha:</strong> {new Date(proyecto.fecha).toLocaleDateString('es-CR', {
+              timeZone: 'UTC',
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric'
+            })}</p>
             <p><strong>Status:</strong> {proyecto.status}</p>
           </div>
         </div>

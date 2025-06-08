@@ -121,7 +121,7 @@ export default function AdminLayout({ children, current }: Props) {
               <SidebarButton label="Gerente Operativo" icon={<FaUserTie />} active={current === "Gerente"} to="/gerente-management" />
               <SidebarButton label="Pilotos" icon={<FaUserAlt />} active={current === "Pilotos"} to="/piloto-management" />
               <SidebarButton label="Socios" icon={<FaUsers />} active={current === "Socios"} to="/socio-management" />
-              <SidebarButton label="Calendario" icon={<FaCalendarAlt />} active={current === "Calendario"} to="/admin" />
+              <SidebarButton label="Calendario" icon={<FaCalendarAlt />} active={current === "Calendario"} to="/calendario" />
             </div>
           </nav>
         </aside>

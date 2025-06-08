@@ -43,6 +43,7 @@ export default function AdminPage() {
                 <h2 className="text-xl font-semibold text-gray-800">{proyecto.nombre}</h2>
                 <p className="text-sm text-gray-500">
                   {new Date(proyecto.fecha).toLocaleDateString("es-CR", {
+                    timeZone: 'UTC',
                     day: "numeric",
                     month: "long",
                     year: "numeric",
