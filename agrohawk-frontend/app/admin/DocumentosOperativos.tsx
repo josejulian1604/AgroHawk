@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import AdminLayout from "../../components/AdminLayout";
+import { FaArrowCircleLeft } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 interface Proyecto {
   _id: string;
@@ -15,6 +17,7 @@ export default function DocumentosOperativos() {
   const [proyectos, setProyectos] = useState<Proyecto[]>([]);
   const [busqueda, setBusqueda] = useState("");
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetch("/api/proyectos/reportes-operativos")
@@ -42,7 +45,14 @@ export default function DocumentosOperativos() {
   return (
     <AdminLayout current="Documentos">
       <div className="text-gray-800">
-        <h1 className="text-2xl font-bold mb-4">Reportes Operativos</h1>
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-bold mb-4">Reportes Operativos</h1>
+          <button className="bg-[#1F384C] w-10 h-10 flex items-center justify-center rounded-full text-white hover:bg-[#27478c]"
+            onClick={() => navigate("/documentos")} 
+          >
+            <FaArrowCircleLeft size={16} />
+          </button>
+        </div>
 
         <div className="mb-6">
           <input

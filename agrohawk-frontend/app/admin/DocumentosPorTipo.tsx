@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import AdminLayout from "../../components/AdminLayout";
+import { FaArrowCircleLeft } from "react-icons/fa";
 
 interface Documento {
   _id: string;
@@ -17,6 +18,7 @@ export default function DocumentosPorTipo() {
   const [loading, setLoading] = useState(true);
   const [docAEliminar, setDocAEliminar] = useState<Documento | null>(null);
   const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false);
+  const navigate = useNavigate();
 
   // Cargar documentos al montar o al cambiar de tipo
   useEffect(() => {
@@ -68,9 +70,17 @@ export default function DocumentosPorTipo() {
 
   return (
     <AdminLayout current="Documentos">
-      <h1 className="text-2xl font-bold text-gray-800 mb-4 capitalize">
-        Documentos: {tipo?.replace("-", " ")}
-      </h1>
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold text-gray-800 mb-4 capitalize">
+          Documentos: {tipo?.replace("-", " ")}
+        </h1>
+        <button className="bg-[#1F384C] w-10 h-10 flex items-center justify-center rounded-full text-white hover:bg-[#27478c]"
+          onClick={() => navigate("/documentos")} 
+        >
+          <FaArrowCircleLeft size={16} />
+        </button>
+      </div>
+      
 
       <div className="flex gap-2 mb-6 text-gray-800">
         <input
