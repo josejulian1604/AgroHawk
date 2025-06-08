@@ -254,7 +254,7 @@ export default function DronesInventory() {
     {mostrarConfirmacion && dronAEliminar && (
         <div className="fixed inset-0 bg-[rgba(0,0,0,0.3)] backdrop-blur-sm flex justify-center items-center z-50 text-gray-800">
           <div className="bg-white p-6 rounded-lg w-full max-w-sm text-center border border-gray-800">
-            <h2 className="text-xl font-bold mb-2">¿Desea eliminar a este administrador?</h2>
+            <h2 className="text-xl font-bold mb-2">¿Desea eliminar a este Dron?</h2>
             <p className="text-sm text-gray-600 mb-6">
               Se eliminará permanentemente el dron: <br />
               <strong>{dronAEliminar.placa}</strong>

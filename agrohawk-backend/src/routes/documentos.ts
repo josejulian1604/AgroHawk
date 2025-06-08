@@ -1,17 +1,34 @@
 import { Router, Request, Response } from "express";
 import Documento from "../models/Documento";
+import multer from "multer";
+import mongoose, { Schema } from "mongoose";
 
 const router = Router();
 
-// Crear nuevo documento
-router.post("/", async (req: Request, res: Response) => {
+// Crear un nuevo documento (con base64)
+router.post("/", async (req: Request, res: any) => {
   try {
-    const nuevo = new Documento(req.body);
-    await nuevo.save();
-    res.status(201).json({ mensaje: "Documento creado", documento: nuevo });
+    const { titulo, tipo, archivoURL, subidoPor, relacionadoAProyecto } = req.body;
+
+    // Validación
+    if (!titulo || !tipo || !archivoURL || !subidoPor) {
+      return res.status(400).json({ mensaje: "Faltan campos obligatorios." });
+    }
+
+    const nuevoDoc = new Documento({
+      titulo,
+      tipo,
+      archivoURL,
+      subidoPor,
+      relacionadoAProyecto: relacionadoAProyecto || undefined,
+    });
+
+    await nuevoDoc.save();
+
+    res.status(201).json({ mensaje: "Documento guardado exitosamente", documento: nuevoDoc });
   } catch (err) {
-    console.error("Error al crear documento:", err);
-    res.status(500).json({ mensaje: "Error al crear documento" });
+    console.error("Error al guardar documento:", err);
+    res.status(500).json({ mensaje: "Error al guardar el documento" });
   }
 });
 

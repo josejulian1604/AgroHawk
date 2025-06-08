@@ -15,9 +15,12 @@ export default function DocumentosPorTipo() {
   const [documentos, setDocumentos] = useState<Documento[]>([]);
   const [busqueda, setBusqueda] = useState("");
   const [loading, setLoading] = useState(true);
+  const [docAEliminar, setDocAEliminar] = useState<Documento | null>(null);
+  const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false);
 
   // Cargar documentos al montar o al cambiar de tipo
   useEffect(() => {
+    console.log("Tipo Recibido: ", tipo);
     if (!tipo) return;
 
     const fetchData = async () => {
@@ -42,6 +45,26 @@ export default function DocumentosPorTipo() {
     doc.titulo.toLowerCase().includes(busqueda.toLowerCase()) ||
     doc.fechaSubida.includes(busqueda)
   );
+
+    const confirmarEliminacion = async () => {
+      if (!docAEliminar) return;
+      
+      try {
+        const response = await fetch(`/api/documentos/${docAEliminar._id}`, {
+          method: "DELETE",
+        });
+      
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.mensaje || "Error al eliminar");
+      
+        setDocumentos((prev) => prev.filter((a) => a._id !== docAEliminar._id));
+        setMostrarConfirmacion(false);
+        setDocAEliminar(null);
+      } catch (error: any) {
+        console.error(error);
+        alert(error.message || "Error al eliminar");
+      }
+    };
 
   return (
     <AdminLayout current="Documentos">
@@ -74,18 +97,54 @@ export default function DocumentosPorTipo() {
                     Subido el {new Date(doc.fechaSubida).toLocaleDateString("es-CR")}
                   </p>
                 </div>
-                <a
-                  href={doc.archivoURL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 underline"
-                >
-                  Ver archivo
-                </a>
+                <div className="flex gap-4">
+                  <a
+                    href={doc.archivoURL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 underline"
+                  >
+                    Descargar archivo
+                  </a>
+                  <button
+                    onClick={async () => {
+                      setDocAEliminar(doc);
+                      setMostrarConfirmacion(true);
+                    }}
+                    className="text-red-600 underline"
+                  >
+                    Eliminar
+                  </button>
+                </div>
               </div>
             </li>
           ))}
         </ul>
+      )}
+      {mostrarConfirmacion && docAEliminar && (
+        <div className="fixed inset-0 bg-[rgba(0,0,0,0.3)] backdrop-blur-sm flex justify-center items-center z-50 text-gray-800">
+          <div className="bg-white p-6 rounded-lg w-full max-w-sm text-center border border-gray-800">
+            <h2 className="text-xl font-bold mb-2">¿Desea eliminar este Documento?</h2>
+            <p className="text-sm text-gray-600 mb-6">
+              Se eliminará permanentemente el documento: <br />
+              <strong>{docAEliminar.titulo}</strong>
+            </p>
+            <div className="flex justify-center gap-4">
+              <button
+                className="border border-gray-500 px-4 py-2 rounded text-gray-700 hover:bg-gray-100"
+                onClick={() => setMostrarConfirmacion(false)}
+              >
+                Cancelar
+              </button>
+              <button
+                className="bg-[#1F384C] text-white px-4 py-2 rounded hover:bg-[#27478c]"
+                onClick={confirmarEliminacion}
+              >
+                Aceptar
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </AdminLayout>
   );

@@ -143,7 +143,7 @@ router.get("/reportes-operativos", async (_req: Request, res: Response) => {
       ]
     })
       .sort({ creadoEn: -1 })
-      .select("nombre imagenesBoletas imagenRecorrido reportePDF creadoEn");
+      .select("nombre fecha imagenesBoletas imagenRecorrido reportePDF creadoEn");
 
     res.json(proyectos);
   } catch (err) {

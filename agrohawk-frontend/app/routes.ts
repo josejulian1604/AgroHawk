@@ -58,7 +58,7 @@ export default [index("routes/home.tsx"),
     file: "admin/DocumentosHome.tsx",
   },
   {
-    path: "documentos/:id",
+    path: "documentos/:tipo",
     file: "admin/DocumentosPorTipo.tsx",
   },
   {
