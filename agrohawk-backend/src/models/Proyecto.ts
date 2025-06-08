@@ -18,6 +18,8 @@ export interface IProyecto extends Document {
   alturaAplicada?: number;
   volumenAplicado?: number;
   hectareas?: number;
+  finca?: string;
+  bloque?: string;
 
   imagenesBoletas: string[];
   imagenRecorrido?: string;
@@ -51,6 +53,9 @@ const ProyectoSchema = new Schema<IProyecto>({
   alturaAplicada: Number,
   volumenAplicado: Number,
   hectareas: Number,
+  finca: { type: String, default: "" },
+  bloque: { type: String, default: "" },
+
 
   imagenesBoletas: { type: [String], default: [] },
   imagenRecorrido: { type: String, default: "" },

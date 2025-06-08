@@ -34,7 +34,7 @@ export default function Calendar() {
           const color = colorPorEstado[estado] || '#2980b9';
 
           return {
-            title: `${proyecto.nombre} - ${proyecto.ubicacion || ''}`,
+            title: `${proyecto.nombre}`,
             start: proyecto.fecha.split('T')[0],
             allDay: true,
             backgroundColor: color,

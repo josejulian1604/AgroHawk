@@ -118,6 +118,17 @@ router.post("/:id/subir-boletas", upload.array("imagenes", 10), async (req: Requ
   }
 });
 
+// Subir pdf a proyecto
+router.put('/:id/reporte', async (req, res) => {
+  const { reportePDF } = req.body;
+  const proyecto = await Proyecto.findByIdAndUpdate(
+    req.params.id,
+    { reportePDF },
+    { new: true }
+  );
+  res.json({ mensaje: "Reporte guardado", proyecto });
+});
+
 // Obtener todos los proyectos
 router.get("/", async (_req: Request, res: Response) => {
   try {
