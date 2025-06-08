@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import AdminLayout from "../../components/AdminLayout";
 import { Link } from "react-router-dom";
+import { PieChart, Pie, Cell } from "recharts";
+import { FaMedal } from "react-icons/fa";
 
 type Proyecto = {
   _id: string;
@@ -9,7 +11,11 @@ type Proyecto = {
   status: string;
   hectareas?: number;
   cultivo?: string;
+  imagenesBoletas?: string[];
+  imagenRecorrido?: string;
 };
+
+const COLORS = ["#1F384C", "#eee"];
 
 export default function AdminPage() {
   const [proyectos, setProyectos] = useState<Proyecto[]>([]);
@@ -38,31 +44,46 @@ export default function AdminPage() {
             key={proyecto._id}
             className="block hover:shadow-md transition"
           >
-            <div className="bg-white p-4 rounded-lg shadow border flex justify-between">
+            <div className="bg-white p-4 rounded-lg shadow border flex justify-between items-center">
               <div>
                 <h2 className="text-xl font-semibold text-gray-800">{proyecto.nombre}</h2>
                 <p className="text-sm text-gray-500">
                   {new Date(proyecto.fecha).toLocaleDateString("es-CR", {
-                    timeZone: 'UTC',
+                    timeZone: "UTC",
                     day: "numeric",
                     month: "long",
                     year: "numeric",
                   })}
                 </p>
-                <p className="mt-2 italic text-gray-700">
-                  Estado: {proyecto.status}
-                </p>
+                <p className="mt-2 italic text-gray-700">Estado: {proyecto.status}</p>
+                
                 {proyecto.hectareas && (
-                  <div className="mt-4 border rounded p-2 bg-gray-100 text-center text-gray-800">
+                  <div className="mt-4 flex items-center gap-2 border rounded p-2 bg-gray-100 text-gray-800">
                     <p className="text-xl font-bold">{proyecto.hectareas}+</p>
-                    <p className="text-sm text-gray-500">Hectáreas Fumigadas</p>
+                    <p className="text-sm text-gray-600">Hectáreas Fumigadas</p>
+                    <FaMedal className="text-yellow-600 text-lg" />
                   </div>
                 )}
               </div>
-              <div className="flex items-center">
-                <div className="h-24 w-24 bg-gray-200 rounded-full flex items-center justify-center text-sm text-gray-800">
-                  {proyecto.cultivo ? proyecto.cultivo : "Gráfico"}
-                </div>
+              
+              <div className="w-40 h-40 flex flex-col items-center justify-center bg-gray-50 rounded-lg shadow-inner p-3">
+                <h4 className="text-sm font-semibold text-gray-600 mb-2">Cultivo Tratado</h4>
+                <PieChart width={120} height={120}>
+                  <Pie
+                    data={[{ name: "Tratado", value: 100 }, { name: "Restante", value: 0 }]}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={35}
+                    outerRadius={50}
+                    paddingAngle={0}
+                    dataKey="value"
+                  >
+                    {COLORS.map((color, i) => (
+                      <Cell key={`cell-${i}`} fill={color} />
+                    ))}
+                  </Pie>
+                </PieChart>
+                <p className="text-xs mt-1 text-gray-500">{proyecto.cultivo} 100%</p>
               </div>
             </div>
           </Link>
