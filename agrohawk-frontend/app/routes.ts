@@ -65,4 +65,8 @@ export default [index("routes/home.tsx"),
     path: "documentos/reportes-operativos",
     file: "admin/DocumentosOperativos.tsx",
   },
+  {
+    path: "calendario",
+    file: "admin/Calendar.tsx",
+  },
 ] satisfies RouteConfig;
