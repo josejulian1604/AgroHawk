@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import {
-  FaBars, FaBoxes, FaCalendarAlt, FaFileAlt, FaFolderOpen, FaTimes,
-  FaUserAlt, FaUserShield, FaUserTie, FaUsers
+  FaBars, FaCalendarAlt, FaFolderOpen, FaTimes,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
@@ -17,7 +16,7 @@ type DecodedToken = {
   apellido1: string;
 };
 
-export default function AdminLayout({ children, current }: Props) {
+export default function GerenteLayout({ children, current }: Props) {
   const navigate = useNavigate();
   const [nombreUsuario, setNombreUsuario] = useState("");
   const [rolUsuario, setRolUsuario] = useState("");
@@ -111,17 +110,11 @@ export default function AdminLayout({ children, current }: Props) {
 
           <nav className="space-y-4 mt-16 lg:mt-0">
             <div className="space-y-2">
-              <SidebarButton label="Proyectos" icon={<FaFolderOpen />} active={current === "Proyectos"} to="/admin" />
-              <SidebarButton label="Inventario" icon={<FaBoxes />} active={current === "Inventario"} to="/inventario" />
-              <SidebarButton label="Documentos" icon={<FaFileAlt />} active={current === "Documentos"} to="/documentos" />
+              <SidebarButton label="Proyectos" icon={<FaFolderOpen />} active={current === "Proyectos"} to="/gerente" />
             </div>
             <hr className="my-4 border-gray-300" />
             <div className="space-y-2">
-              <SidebarButton label="Administradores" icon={<FaUserShield />} active={current === "Administradores"} to="/admin-management" />
-              <SidebarButton label="Gerente Operativo" icon={<FaUserTie />} active={current === "Gerente"} to="/gerente-management" />
-              <SidebarButton label="Pilotos" icon={<FaUserAlt />} active={current === "Pilotos"} to="/piloto-management" />
-              <SidebarButton label="Socios" icon={<FaUsers />} active={current === "Socios"} to="/socio-management" />
-              <SidebarButton label="Calendario" icon={<FaCalendarAlt />} active={current === "Calendario"} to="/calendario" />
+              <SidebarButton label="Calendario" icon={<FaCalendarAlt />} active={current === "Calendario"} to="/calendario-gerente" />
             </div>
           </nav>
         </aside>

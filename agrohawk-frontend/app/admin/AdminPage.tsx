@@ -34,6 +34,7 @@ export default function AdminPage() {
     fetchProyectos();
   }, []);
 
+  if (proyectos)
   return (
     <AdminLayout current="Proyectos">
       <h1 className="text-2xl font-bold mb-6 text-gray-800">Proyectos</h1>
@@ -44,7 +45,7 @@ export default function AdminPage() {
             key={proyecto._id}
             className="block hover:shadow-md transition"
           >
-            <div className="bg-white p-4 rounded-lg shadow border flex justify-between items-center">
+            <div className="bg-white p-4 rounded-lg shadow border flex flex-col md:flex-row justify-between items-center gap-4">
               <div>
                 <h2 className="text-xl font-semibold text-gray-800">{proyecto.nombre}</h2>
                 <p className="text-sm text-gray-500">
@@ -56,6 +57,9 @@ export default function AdminPage() {
                   })}
                 </p>
                 <p className="mt-2 italic text-gray-700">Estado: {proyecto.status}</p>
+                <p className="text text-gray-600 mt-2">
+                  Documentos Cargados: {(proyecto.imagenesBoletas?.length || 0) + (proyecto.imagenRecorrido ? 1 : 0)}
+                </p>
                 
                 {proyecto.hectareas && (
                   <div className="mt-4 flex items-center gap-2 border rounded p-2 bg-gray-100 text-gray-800">

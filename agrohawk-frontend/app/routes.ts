@@ -23,7 +23,7 @@ export default [index("routes/home.tsx"),
   },
   {
     path: "gerente",
-    file: "operative-manager/manager.tsx",
+    file: "operative-manager/ManagerPage.tsx",
   },
   {
     path: "admin-management",
@@ -68,5 +68,13 @@ export default [index("routes/home.tsx"),
   {
     path: "calendario",
     file: "admin/Calendar.tsx",
+  },
+  {
+    path: "proyecto-gerente/:id",
+    file: "operative-manager/ManagerProject.tsx",
+  },
+  {
+    path: "calendario-gerente",
+    file: "operative-manager/ManagerCalendar.tsx",
   },
 ] satisfies RouteConfig;

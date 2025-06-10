@@ -151,6 +151,15 @@ export default function DocumentosOperativos() {
                     </div>
                   ))}
                 </div>
+                antes
+                <a href={proy.imagenRecorrido}>
+                  <img
+                      src={proy.imagenRecorrido}
+                      alt={`Recorrido`}
+                      className="w-full h-auto rounded shadow"
+                    />
+                </a>
+                Holallala
               </div>
             ))}
           </div>

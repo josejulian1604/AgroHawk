@@ -129,6 +129,60 @@ router.put('/:id/reporte', async (req, res) => {
   res.json({ mensaje: "Reporte guardado", proyecto });
 });
 
+// Subir imagen de recorrido al proyecto
+router.post("/:id/subir-recorrido", upload.single("imagen"), async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+
+    const proyecto = await Proyecto.findById(id);
+    if (!proyecto) {
+      res.status(404).json({ mensaje: "Proyecto no encontrado." });
+      return;
+    }
+
+    const file = (req as MulterRequest).file;
+    if (!file) {
+      res.status(400).json({ mensaje: "No se subió ninguna imagen." });
+      return;
+    }
+
+    const imagenBase64 = `data:${file.mimetype};base64,${file.buffer.toString("base64")}`;
+    proyecto.imagenRecorrido = imagenBase64;
+    await proyecto.save();
+
+    res.status(200).json({ mensaje: "Imagen de recorrido subida correctamente.", imagenRecorrido: imagenBase64 });
+  } catch (error) {
+    console.error("Error al subir imagen de recorrido:", error);
+    res.status(500).json({ mensaje: "Error interno al subir imagen de recorrido." });
+  }
+});
+
+// Agregar un comentario
+router.post("/:id/comentario", async (req: Request, res: any) => {
+  try {
+    const { id } = req.params;
+    const { texto } = req.body;
+
+    if (!texto || typeof texto !== "string") {
+      return res.status(400).json({ mensaje: "Comentario inválido" });
+    }
+
+    const proyecto = await Proyecto.findById(id);
+    if (!proyecto) {
+      return res.status(404).json({ mensaje: "Proyecto no encontrado" });
+    }
+
+    proyecto.comentarios = proyecto.comentarios || [];
+    proyecto.comentarios.push(texto);
+    await proyecto.save();
+
+    res.status(200).json({ mensaje: "Comentario agregado", comentarios: proyecto.comentarios });
+  } catch (error) {
+    console.error("Error al agregar comentario:", error);
+    res.status(500).json({ mensaje: "Error interno" });
+  }
+});
+
 // Obtener todos los proyectos
 router.get("/", async (_req: Request, res: Response) => {
   try {
