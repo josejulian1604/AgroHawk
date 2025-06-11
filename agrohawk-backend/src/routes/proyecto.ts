@@ -112,6 +112,8 @@ router.post("/:id/subir-boletas", upload.array("imagenes", 10), async (req: Requ
           {
             folder: "boletas",
             resource_type: "image",
+            type: "upload",
+            access_mode: "public",
           },
           (error, result) => {
             if (error) return reject(error);
@@ -168,6 +170,8 @@ router.put("/:id/reporte", upload.single("reportePDF"), async (req: Request, res
         {
           folder: "reportes_pdf",
           resource_type: "raw",
+          type: "upload",
+          access_mode: "public",
           public_id: `reporte_${proyecto.nombre?.replace(/\s+/g, "_")}_${Date.now()}.pdf`
         },
         (error, result) => {
@@ -218,6 +222,8 @@ router.post("/:id/subir-recorrido", upload.single("imagen"), async (req: Request
         {
           folder: "recorridos",
           resource_type: "image",
+          type: "upload",
+          access_mode: "public",
         },
         (error, result) => {
           if (error) return reject(error);
@@ -340,14 +346,6 @@ router.put("/:id", async (req: Request, res: any) => {
 });
 
 // Eliminar proyecto
-// Extrae el public_id desde una URL de Cloudinary
-function obtenerPublicId(url: string): string {
-  const parts = url.split("/");
-  const filename = parts[parts.length - 1]; 
-  const folder = parts[parts.length - 2];   
-  return `${folder}/${filename.split(".")[0]}`; 
-}
-
 router.delete("/:id", async (req: Request, res: any) => {
   try {
     const proyecto = await Proyecto.findById(req.params.id);
@@ -357,19 +355,28 @@ router.delete("/:id", async (req: Request, res: any) => {
 
     // Eliminar imágenes de boletas
     for (const url of proyecto.imagenesBoletas || []) {
-      const publicId = obtenerPublicId(url);
+      const partes = url.split("/");
+      const folder = partes.at(-2);
+      const filename = partes.at(-1); // Incluye la extensión
+      const publicId = `${folder}/${filename}`;
       await cloudinary.uploader.destroy(publicId, { resource_type: "image" });
     }
 
     // Eliminar imagen de recorrido
     if (proyecto.imagenRecorrido) {
-      const publicId = obtenerPublicId(proyecto.imagenRecorrido);
+      const partes = proyecto.imagenRecorrido.split("/");
+      const folder = partes.at(-2);
+      const filename = partes.at(-1);
+      const publicId = `${folder}/${filename}`;
       await cloudinary.uploader.destroy(publicId, { resource_type: "image" });
     }
 
     // Eliminar PDF
     if (proyecto.reportePDF) {
-      const publicId = obtenerPublicId(proyecto.reportePDF);
+      const partes = proyecto.reportePDF.split("/");
+      const folder = partes.at(-2);
+      const filename = partes.at(-1);
+      const publicId = `${folder}/${filename}`;
       await cloudinary.uploader.destroy(publicId, { resource_type: "raw" });
     }
 

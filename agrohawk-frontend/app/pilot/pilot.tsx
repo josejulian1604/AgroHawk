@@ -169,10 +169,6 @@ export default function Pilot() {
             </div>
 
             <hr className="my-4 border-gray-300" />
-
-            <div className="space-y-2">
-              <SidebarButton label="Configuración" icon={<FaWrench />} />
-            </div>
           </nav>
         </aside>
 

@@ -24,13 +24,15 @@ router.post("/", upload.single("archivo"), async (req: Request, res: any) => {
 
     const extension = file.originalname.split(".").pop();
     const nombreLimpio = titulo.replace(/\s+/g, "_");
-    const publicId = `documentos/${nombreLimpio}_${Date.now()}.${extension}`;
+    const publicId = `${nombreLimpio}_${Date.now()}.${extension}`;
 
     const archivoURL: string = await new Promise((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream(
         {
           folder: "documentos",
           resource_type: "raw",
+          type: "upload",
+          access_mode: "public",
           public_id: publicId
         },
         (error, result) => {
@@ -104,29 +106,32 @@ router.get("/buscar", async (req: Request, res: any) => {
   }
 });
 
-function obtenerPublicId(url: string): string {
-  const sinExtension = url.split("/").pop()?.split(".").slice(0, -1).join(".");
-  return `documentos/${sinExtension}`;
-}
-
-// Eliminar documento
+// Eliminar documento y su archivo en Cloudinary
 router.delete("/:id", async (req: Request, res: any) => {
   try {
     const documento = await Documento.findById(req.params.id);
-
     if (!documento) {
       return res.status(404).json({ mensaje: "Documento no encontrado" });
     }
 
     if (documento.archivoURL) {
-      const publicId = obtenerPublicId(documento.archivoURL);
-      await cloudinary.uploader.destroy(publicId, { resource_type: "raw" });
+      const partes = documento.archivoURL.split("/");
+      const filename = partes.at(-1); // archivo.pdf
+      const folder = partes.at(-2);   // carpeta (ej. "documentos")
+      const publicId = `${folder}/${filename}`;
+      console.log("🔑 Public ID exacto:", publicId);
+
+      const result = await cloudinary.uploader.destroy(publicId, {
+        resource_type: "raw"
+      });
+
+      console.log("🧹 Resultado eliminación:", result);
     }
 
     await documento.deleteOne();
     res.json({ mensaje: "Documento eliminado correctamente" });
   } catch (err) {
-    console.error("Error al eliminar documento:", err);
+    console.error("❌ Error:", err);
     res.status(500).json({ mensaje: "Error al eliminar documento" });
   }
 });

@@ -165,9 +165,6 @@ export default function PilotProjectPage() {
               <SidebarButton label="Proyectos" icon={<FaFolderOpen />} active />
             </div>
             <hr className="my-4 border-gray-300" />
-            <div className="space-y-2">
-              <SidebarButton label="Configuración" icon={<FaWrench />} />
-            </div>
           </nav>
 
           {/* Botón de salir */}
