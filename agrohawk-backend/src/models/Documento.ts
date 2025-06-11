@@ -13,7 +13,7 @@ const DocumentoSchema: Schema = new Schema({
   titulo: { type: String, required: true },
   tipo: {
     type: String,
-    enum: ["minuta", "estado financiero", "presentación", "reporte operativo"],
+    enum: ["minuta", "estado-financiero", "presentacion", "reporte-operativo"],
     required: true,
   },
   archivoURL: { type: String, required: true },

@@ -1,19 +1,45 @@
 import { Router, Request, Response } from "express";
 import Documento from "../models/Documento";
 import multer from "multer";
-import mongoose, { Schema } from "mongoose";
+import { Stream } from "stream";
+import cloudinary from "./cloudinaryConfig"; 
+import { v2 as cloud } from "cloudinary";
 
 const router = Router();
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 
-// Crear un nuevo documento (con base64)
-router.post("/", async (req: Request, res: any) => {
+// Crear un nuevo documento 
+router.post("/", upload.single("archivo"), async (req: Request, res: any) => {
   try {
-    const { titulo, tipo, archivoURL, subidoPor, relacionadoAProyecto } = req.body;
+    const { titulo, tipo, subidoPor, relacionadoAProyecto } = req.body;
+    const file = req.file;
 
-    // Validación
-    if (!titulo || !tipo || !archivoURL || !subidoPor) {
-      return res.status(400).json({ mensaje: "Faltan campos obligatorios." });
+    if (!titulo || !tipo || !subidoPor || !file) {
+      return res.status(400).json({ mensaje: "Faltan campos obligatorios o archivo." });
     }
+
+    const bufferStream = new Stream.PassThrough();
+    bufferStream.end(file.buffer);
+
+    const extension = file.originalname.split(".").pop();
+    const nombreLimpio = titulo.replace(/\s+/g, "_");
+    const publicId = `documentos/${nombreLimpio}_${Date.now()}.${extension}`;
+
+    const archivoURL: string = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        {
+          folder: "documentos",
+          resource_type: "raw",
+          public_id: publicId
+        },
+        (error, result) => {
+          if (error) return reject(error);
+          resolve(result?.secure_url || "");
+        }
+      );
+      bufferStream.pipe(stream);
+    });
 
     const nuevoDoc = new Documento({
       titulo,
@@ -24,7 +50,6 @@ router.post("/", async (req: Request, res: any) => {
     });
 
     await nuevoDoc.save();
-
     res.status(201).json({ mensaje: "Documento guardado exitosamente", documento: nuevoDoc });
   } catch (err) {
     console.error("Error al guardar documento:", err);
@@ -79,15 +104,29 @@ router.get("/buscar", async (req: Request, res: any) => {
   }
 });
 
+function obtenerPublicId(url: string): string {
+  const sinExtension = url.split("/").pop()?.split(".").slice(0, -1).join(".");
+  return `documentos/${sinExtension}`;
+}
+
 // Eliminar documento
 router.delete("/:id", async (req: Request, res: any) => {
   try {
-    const eliminado = await Documento.findByIdAndDelete(req.params.id);
-    if (!eliminado) {
+    const documento = await Documento.findById(req.params.id);
+
+    if (!documento) {
       return res.status(404).json({ mensaje: "Documento no encontrado" });
     }
-    res.json({ mensaje: "Documento eliminado" });
+
+    if (documento.archivoURL) {
+      const publicId = obtenerPublicId(documento.archivoURL);
+      await cloudinary.uploader.destroy(publicId, { resource_type: "raw" });
+    }
+
+    await documento.deleteOne();
+    res.json({ mensaje: "Documento eliminado correctamente" });
   } catch (err) {
+    console.error("Error al eliminar documento:", err);
     res.status(500).json({ mensaje: "Error al eliminar documento" });
   }
 });

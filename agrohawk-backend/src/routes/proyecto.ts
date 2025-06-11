@@ -3,6 +3,8 @@ import Proyecto from "../models/Proyecto";
 import Usuario from "../models/Usuario";
 import Dron from "../models/Drone";
 import multer from "multer";
+import cloudinary from "./cloudinaryConfig"; 
+import { Stream } from "stream";
 
 const router = express.Router();
 const storage = multer.memoryStorage();
@@ -85,56 +87,117 @@ router.get("/piloto/:pilotoId", async (req: Request, res: any) => {
   }
 });
 
-// Subir imágenes de boletas al proyecto - VERSIÓN CORREGIDA
+// Subir imágenes de boletas al proyecto - versión cloudinary
 router.post("/:id/subir-boletas", upload.array("imagenes", 10), async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-
     const proyecto = await Proyecto.findById(id);
     if (!proyecto) {
       res.status(404).json({ mensaje: "Proyecto no encontrado." });
       return;
     }
 
-    // Casting seguro del request para acceder a files
     const files = (req as MulterRequest).files;
-    
     if (!files || files.length === 0) {
       res.status(400).json({ mensaje: "No se subieron imágenes." });
       return;
     }
 
-    const nuevasImagenes = files.map((file) =>
-      `data:${file.mimetype};base64,${file.buffer.toString("base64")}`
-    );
+    const subirACloudinary = (file: Express.Multer.File): Promise<string> => {
+      return new Promise((resolve, reject) => {
+        const bufferStream = new Stream.PassThrough();
+        bufferStream.end(file.buffer);
+
+        const stream = cloudinary.uploader.upload_stream(
+          {
+            folder: "boletas",
+            resource_type: "image",
+          },
+          (error, result) => {
+            if (error) return reject(error);
+            resolve(result?.secure_url || "");
+          }
+        );
+
+        bufferStream.pipe(stream);
+      });
+    };
+
+    const nuevasImagenes: string[] = [];
+
+    for (const file of files) {
+      const url = await subirACloudinary(file);
+      nuevasImagenes.push(url);
+    }
 
     proyecto.imagenesBoletas.push(...nuevasImagenes);
     await proyecto.save();
 
-    res.status(200).json({ mensaje: "Imágenes subidas correctamente.", imagenesBoletas: proyecto.imagenesBoletas });
+    res.status(200).json({
+      mensaje: "Imágenes subidas correctamente.",
+      imagenesBoletas: proyecto.imagenesBoletas,
+    });
   } catch (error) {
     console.error("Error al subir imágenes:", error);
     res.status(500).json({ mensaje: "Error interno al subir imágenes." });
   }
 });
 
-// Subir pdf a proyecto
-router.put('/:id/reporte', async (req, res) => {
-  const { reportePDF } = req.body;
-  const proyecto = await Proyecto.findByIdAndUpdate(
-    req.params.id,
-    { reportePDF },
-    { new: true }
-  );
-  res.json({ mensaje: "Reporte guardado", proyecto });
+// Subir pdf a proyecto - cloudify
+router.put("/:id/reporte", upload.single("reportePDF"), async (req: Request, res: any) => {
+  try {
+    const { id } = req.params;
+    const proyecto = await Proyecto.findById(id);
+
+    if (!proyecto) {
+      return res.status(404).json({ mensaje: "Proyecto no encontrado." });
+    }
+
+    const file = (req as MulterRequest).file;
+    console.log("Estoy en backend subiendo PDF.")
+    if (!file) {
+      return res.status(400).json({ mensaje: "No se subió ningún archivo." });
+    }
+
+    // Subir a Cloudinary
+    const bufferStream = new Stream.PassThrough();
+    bufferStream.end(file.buffer);
+
+    const urlPDF: string = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        {
+          folder: "reportes_pdf",
+          resource_type: "raw",
+          public_id: `reporte_${proyecto.nombre?.replace(/\s+/g, "_")}_${Date.now()}.pdf`
+        },
+        (error, result) => {
+          if (error) return reject(error);
+          resolve(result?.secure_url || "");
+        }
+      );
+      bufferStream.pipe(stream);
+    });
+
+    // Guardar la URL en el proyecto
+    proyecto.reportePDF = urlPDF;
+    await proyecto.save();
+
+    res.status(200).json({
+      mensaje: "PDF subido correctamente.",
+      reportePDF: urlPDF,
+    });
+  } catch (error) {
+    console.error("Error al subir PDF:", error);
+    res.status(500).json({ mensaje: "Error al subir PDF", error });
+  }
 });
 
-// Subir imagen de recorrido al proyecto
+// Subir imagen de recorrido al proyecto - cloudinary
 router.post("/:id/subir-recorrido", upload.single("imagen"), async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-
     const proyecto = await Proyecto.findById(id);
+
     if (!proyecto) {
       res.status(404).json({ mensaje: "Proyecto no encontrado." });
       return;
@@ -146,11 +209,32 @@ router.post("/:id/subir-recorrido", upload.single("imagen"), async (req: Request
       return;
     }
 
-    const imagenBase64 = `data:${file.mimetype};base64,${file.buffer.toString("base64")}`;
-    proyecto.imagenRecorrido = imagenBase64;
+    // Subir a Cloudinary
+    const bufferStream = new Stream.PassThrough();
+    bufferStream.end(file.buffer);
+
+    const urlImagen: string = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        {
+          folder: "recorridos",
+          resource_type: "image",
+        },
+        (error, result) => {
+          if (error) return reject(error);
+          resolve(result?.secure_url || "");
+        }
+      );
+      bufferStream.pipe(stream);
+    });
+
+    // Guardar la URL en el proyecto
+    proyecto.imagenRecorrido = urlImagen;
     await proyecto.save();
 
-    res.status(200).json({ mensaje: "Imagen de recorrido subida correctamente.", imagenRecorrido: imagenBase64 });
+    res.status(200).json({
+      mensaje: "Imagen de recorrido subida correctamente.",
+      imagenRecorrido: urlImagen,
+    });
   } catch (error) {
     console.error("Error al subir imagen de recorrido:", error);
     res.status(500).json({ mensaje: "Error interno al subir imagen de recorrido." });
@@ -202,9 +286,9 @@ router.get("/reportes-operativos", async (_req: Request, res: Response) => {
   try {
     const proyectos = await Proyecto.find({
       $or: [
-        { imagenesBoletas: { $exists: true, $not: { $size: 0 } } },
-        { imagenRecorrido: { $exists: true, $ne: "" } },
-        { reportePDF: { $exists: true, $ne: "" } }
+        { imagenesBoletas: { $exists: true, $type: "array", $not: { $size: 0 } } },
+        { imagenRecorrido: { $exists: true, $type: "string", $ne: "" } },
+        { reportePDF: { $exists: true, $type: "string", $ne: "" } }
       ]
     })
       .sort({ creadoEn: -1 })
@@ -256,16 +340,45 @@ router.put("/:id", async (req: Request, res: any) => {
 });
 
 // Eliminar proyecto
+// Extrae el public_id desde una URL de Cloudinary
+function obtenerPublicId(url: string): string {
+  const parts = url.split("/");
+  const filename = parts[parts.length - 1]; 
+  const folder = parts[parts.length - 2];   
+  return `${folder}/${filename.split(".")[0]}`; 
+}
+
 router.delete("/:id", async (req: Request, res: any) => {
   try {
-    const eliminado = await Proyecto.findByIdAndDelete(req.params.id);
-
-    if (!eliminado) {
+    const proyecto = await Proyecto.findById(req.params.id);
+    if (!proyecto) {
       return res.status(404).json({ mensaje: "Proyecto no encontrado." });
     }
 
-    res.status(200).json({ mensaje: "Proyecto eliminado correctamente" });
+    // Eliminar imágenes de boletas
+    for (const url of proyecto.imagenesBoletas || []) {
+      const publicId = obtenerPublicId(url);
+      await cloudinary.uploader.destroy(publicId, { resource_type: "image" });
+    }
+
+    // Eliminar imagen de recorrido
+    if (proyecto.imagenRecorrido) {
+      const publicId = obtenerPublicId(proyecto.imagenRecorrido);
+      await cloudinary.uploader.destroy(publicId, { resource_type: "image" });
+    }
+
+    // Eliminar PDF
+    if (proyecto.reportePDF) {
+      const publicId = obtenerPublicId(proyecto.reportePDF);
+      await cloudinary.uploader.destroy(publicId, { resource_type: "raw" });
+    }
+
+    // Eliminar el proyecto de Mongo
+    await proyecto.deleteOne();
+
+    res.status(200).json({ mensaje: "Proyecto y archivos eliminados correctamente" });
   } catch (error) {
+    console.error("Error al eliminar proyecto:", error);
     res.status(500).json({ mensaje: "Error al eliminar", error });
   }
 });

@@ -71,87 +71,100 @@ export default function ManagerProject() {
     );
   }
   const generarReportePDF = async (proyecto: Proyecto) => {
-    const doc = new jsPDF();
+  const doc = new jsPDF();
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const margin = 10;
+  const contentWidth = pageWidth - margin * 2;
 
-    const contenido = document.createElement("div");
-    contenido.style.position = "absolute";
-    contenido.style.top = "0";
-    contenido.style.left = "0";
-    contenido.style.zIndex = "-9999";
-    contenido.style.width = "800px";
-    contenido.style.padding = "40px";
-    contenido.style.backgroundColor = "#fff";
-    contenido.style.color = "#000";
-    contenido.style.fontFamily = "sans-serif";
-    contenido.style.lineHeight = "1.6";
-    contenido.style.overflow = "visible";
+  // 🔵 Página 1: Header + cuadro
+  const contenido1 = document.createElement("div");
+  contenido1.style.width = "800px";
+  contenido1.style.padding = "40px";
+  contenido1.style.backgroundColor = "#fff";
+  contenido1.style.color = "#000";
+  contenido1.style.fontFamily = "sans-serif";
+  contenido1.style.lineHeight = "1.6";
 
-    contenido.innerHTML = `
-      <img src="/header.png" style="width:100%; margin-bottom:20px;" />
-      <h2 style="text-align:center; color:#000;">REPORTE DE FUMIGACIÓN</h2>
-      <table style="width:100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px;">
-        ${[
-          ["CLIENTE", proyecto.cliente],
-          ["FECHA", new Date(proyecto.fecha).toLocaleDateString('es-CR')],
-          ["PILOTO", proyecto.piloto?.nombre || ""],
-          ["CULTIVO", proyecto.cultivo],
-          ["FINCA", proyecto.finca],
-          ["BLOQUE", proyecto.bloque],
-          ["HECTÁREAS", proyecto.hectareas + " ha"],
-          ["PRODUCTO", proyecto.producto],
-          ["BOQUILLAS", proyecto.boquillas],
-          ["ANCHO", proyecto.anchoAplicado + " m"],
-          ["ALTURA", proyecto.alturaAplicada + " m"],
-          ["VOLUMEN", proyecto.volumenAplicado + " LTS/HA"]
-        ].map(([label, val]) => `
-          <tr>
-            <td style="border:1px solid #000; font-weight:bold; padding:6px;">${label}</td>
-            <td style="border:1px solid #000; padding:6px;">${val}</td>
-          </tr>`).join("")}
-      </table>
-      <h4>Imágenes Adjuntas</h4>
-      ${(proyecto.imagenesBoletas ?? []).map((img, i) =>
-        `<img src="${img}" style="width:100%; margin-bottom:10px;" alt="Boleta ${i + 1}" />`).join("")}
-      ${proyecto.imagenRecorrido
-        ? `<img src="${proyecto.imagenRecorrido}" style="width:100%; margin-top:10px;" alt="Recorrido" />`
-        : ""}
-      <img src="/footer.png" style="width:100%; margin-top:30px;" />
-    `;
+  contenido1.innerHTML = `
+    <img src="/header.png" style="width:100%; margin-bottom:20px;" />
+    <h2 style="text-align:center;">REPORTE DE FUMIGACIÓN</h2>
+    <table style="width:100%; border-collapse: collapse; font-size: 14px;">
+      ${[
+        ["CLIENTE", proyecto.cliente],
+        ["FECHA", new Date(proyecto.fecha).toLocaleDateString('es-CR')],
+        ["PILOTO", proyecto.piloto?.nombre || ""],
+        ["CULTIVO", proyecto.cultivo],
+        ["FINCA", proyecto.finca],
+        ["BLOQUE", proyecto.bloque],
+        ["HECTÁREAS", proyecto.hectareas + " ha"],
+        ["PRODUCTO", proyecto.producto],
+        ["BOQUILLAS", proyecto.boquillas],
+        ["ANCHO", proyecto.anchoAplicado + " m"],
+        ["ALTURA", proyecto.alturaAplicada + " m"],
+        ["VOLUMEN", proyecto.volumenAplicado + " LTS/HA"]
+      ].map(([label, val]) => `
+        <tr>
+          <td style="border:1px solid #000; font-weight:bold; padding:6px;">${label}</td>
+          <td style="border:1px solid #000; padding:6px;">${val}</td>
+        </tr>`).join("")}
+    </table>
+  `;
+  document.body.appendChild(contenido1);
+  await new Promise(res => setTimeout(res, 300));
+  const canvas1 = await html2canvas(contenido1, { scale: 1, useCORS: true });
+  const img1 = canvas1.toDataURL("image/png");
+  const imgHeight1 = (canvas1.height * contentWidth) / canvas1.width;
+  doc.addImage(img1, "PNG", margin, margin, contentWidth, imgHeight1);
+  document.body.removeChild(contenido1);
 
-    document.body.appendChild(contenido);
-    await new Promise(resolve => setTimeout(resolve, 500));
+  // 🟡 Página 2: Boletas
+  if (proyecto.imagenesBoletas?.length) {
+    doc.addPage();
+    let posY = margin;
 
-    const canvas = await html2canvas(contenido, {
-      scale: 2,
-      useCORS: true,
-      backgroundColor: "#ffffff"
-    });
+    for (let i = 0; i < proyecto.imagenesBoletas.length; i++) {
+      const imgURL = proyecto.imagenesBoletas[i];
+      const img = await cargarImagen(imgURL);
+      const imgHeight = (img.height * contentWidth) / img.width;
 
-    const imgData = canvas.toDataURL("image/png");
+      if (i > 0) posY += 10;
+      doc.addImage(img, "JPEG", margin, posY, contentWidth, imgHeight);
+      posY += imgHeight;
+    }
+  }
 
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
-    const imgWidth = pageWidth;
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+  // 🟢 Página 3: Recorrido + Footer
+  if (proyecto.imagenRecorrido || true) {
+    doc.addPage();
+    let posY = margin;
 
-    let heightLeft = imgHeight;
-    let position = 0;
-
-    doc.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-    heightLeft -= pageHeight;
-
-    while (heightLeft > 0) {
-      position -= pageHeight;
-      doc.addPage();
-      doc.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
+    if (proyecto.imagenRecorrido) {
+      const recorrido = await cargarImagen(proyecto.imagenRecorrido);
+      const recorridoHeight = (recorrido.height * contentWidth) / recorrido.width;
+      doc.addImage(recorrido, "JPEG", margin, posY, contentWidth, recorridoHeight);
+      posY += recorridoHeight + 10;
     }
 
-    document.body.removeChild(contenido);
+    const footer = await cargarImagen("/footer.png");
+    const footerHeight = (footer.height * contentWidth) / footer.width;
+    doc.addImage(footer, "PNG", margin, posY, contentWidth, footerHeight);
+  }
 
-    const blob = await doc.output("blob");
-    return URL.createObjectURL(blob);
-  };
+  const blob = await doc.output("blob");
+  console.log("Tamaño del blob:", blob.size);
+  return URL.createObjectURL(blob);
+};
+
+
+const cargarImagen = (src: string): Promise<HTMLImageElement> => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
+};
   
   const handleGenerarReporte = async () => {
     console.log("Generando reporte...");
@@ -229,23 +242,17 @@ export default function ManagerProject() {
         const blobURL = await generarReportePDF(proyecto);
   
         const blob = await fetch(blobURL).then(res => res.blob());
-        const reader = new FileReader();
-  
-        reader.onloadend = async () => {
-          const base64 = reader.result;
-  
-          const resPDF = await fetch(`/api/proyectos/${proyecto._id}/reporte`, {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ reportePDF: base64 }),
-          });
-  
-          if (!resPDF.ok) throw new Error("Error al subir el PDF");
-        };
-  
-        reader.readAsDataURL(blob);
+
+        const formData = new FormData();
+        formData.append("reportePDF", blob, "reporte.pdf"); 
+
+        const resPDF = await fetch(`/api/proyectos/${proyecto._id}/reporte`, {
+          method: "PUT",
+          body: formData, 
+        });
+
+        if (!resPDF.ok) throw new Error("Error al subir el PDF");
+        if (resPDF.ok) console.log("Todo bien con el pdf en la base.")
       }
   
       // Luego actualizar el estado

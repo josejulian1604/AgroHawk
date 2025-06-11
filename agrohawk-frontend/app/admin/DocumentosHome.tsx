@@ -91,48 +91,41 @@ const handleSubirDocumento = async () => {
   setMensaje(null);
 
   try {
-    const reader = new FileReader();
+    const formData = new FormData();
+    formData.append("archivo", archivo);
+    formData.append("titulo", titulo);
+    formData.append("tipo", tipo);
+    formData.append("subidoPor", usuarioId);
+    if (proyectoId) {
+      formData.append("relacionadoAProyecto", proyectoId);
+    }
 
-    reader.onloadend = async () => {
-      const archivoURL = reader.result;
+    const res = await fetch("/api/documentos", {
+      method: "POST",
+      body: formData,
+    });
 
-      const payload = {
-        titulo,
-        tipo,
-        archivoURL,
-        subidoPor: usuarioId,
-        relacionadoAProyecto: proyectoId || undefined,
-      };
-      
-      const res = await fetch("/api/documentos", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      
-      const data = await res.json();
+    const data = await res.json();
 
-      if (res.ok) {
-        setMensaje({ texto: "Documento subido correctamente.", tipo: "exito" });
-        setMostrarModal(false);
-        setTitulo("");
-        setTipo("");
-        setArchivo(null);
-        setProyectoId("");
-      } else {
-        setMensaje({ texto: data.mensaje || "Error al subir documento.", tipo: "error" });
-      }
-      setSubiendo(false);
-      setTimeout(() => setMensaje(null), 4000);
-    };
-    console.log(titulo,tipo,archivo,usuarioId)
-    reader.readAsDataURL(archivo); 
+    if (res.ok) {
+      setMensaje({ texto: "Documento subido correctamente.", tipo: "exito" });
+      setMostrarModal(false);
+      setTitulo("");
+      setTipo("");
+      setArchivo(null);
+      setProyectoId("");
+    } else {
+      setMensaje({ texto: data.mensaje || "Error al subir documento.", tipo: "error" });
+    }
   } catch (err) {
     console.error("Error al subir documento:", err);
-    setSubiendo(false);
     setMensaje({ texto: "Ocurrió un error al subir el documento.", tipo: "error" });
+  } finally {
+    setSubiendo(false);
+    setTimeout(() => setMensaje(null), 4000);
   }
 };
+
   return (
     <AdminLayout current="Documentos">
       <div className="flex justify-between items-center mb-6">
