@@ -11,6 +11,7 @@ import pilotoRouter from "./routes/piloto";
 import dronRoutes from "./routes/dron";
 import proyectoRoutes from "./routes/proyecto";
 import documentoRoutes from "./routes/documentos";
+import resetRoutes from "./routes/reset"
 
 
 dotenv.config();
@@ -46,3 +47,4 @@ mongoose
   app.use("/api/drones", dronRoutes);
   app.use("/api/proyectos", proyectoRoutes);
   app.use("/api/documentos", documentoRoutes);
+  app.use("/api/reset", resetRoutes);

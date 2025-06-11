@@ -77,4 +77,8 @@ export default [index("routes/home.tsx"),
     path: "calendario-gerente",
     file: "operative-manager/ManagerCalendar.tsx",
   },
+  {
+    path: "reset-password/:id",
+    file: "routes/ResetPassword.tsx",
+  },
 ] satisfies RouteConfig;

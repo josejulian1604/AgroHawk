@@ -1,44 +1,44 @@
 import { Router, Request, Response } from "express";
 import nodemailer from "nodemailer";
 import jwt from "jsonwebtoken";
-import Usuario from "../models/Usuario";
+import bcrypt from "bcrypt";
+import Usuario, { IUsuario } from "../models/Usuario";
 import dotenv from "dotenv";
 
 dotenv.config();
 
 const router = Router();
 
-router.post("/reset-password", async (req: any, res: any) => {
+// 📤 Paso 1: Enviar enlace con token al correo
+router.post("/reset-password", async (req: Request, res: any) => {
   const { email } = req.body;
 
   try {
-    // Verificar si el usuario existe
     const usuario = await Usuario.findOne({ correo: email });
 
     if (!usuario) {
       return res.status(404).json({ mensaje: "Correo no registrado" });
     }
 
-    // Crear un token JWT de un solo uso con expiración de 15 minutos
     const token = jwt.sign(
       { id: usuario._id },
       process.env.JWT_SECRET || "supersecreto",
       { expiresIn: "15m" }
     );
 
-    // Construir URL de restablecimiento
-    const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+    const resetUrl = `${process.env.FRONTEND_BASE_URL}/reset-password/${token}`;
 
-    // Configurar transporte de correo
+    console.log("MAIL_USER:", process.env.MAIL_USER);
+    console.log("MAIL_PASS:", process.env.MAIL_PASS);
+
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: process.env.MAIL_USER,
-        pass: process.env.MAIL_PASS,
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
       },
     });
 
-    // Enviar el correo
     await transporter.sendMail({
       from: `"AgroHawk" <${process.env.MAIL_USER}>`,
       to: email,
@@ -55,6 +55,35 @@ router.post("/reset-password", async (req: any, res: any) => {
   } catch (error) {
     console.error("Error al enviar correo:", error);
     return res.status(500).json({ mensaje: "Error al procesar la solicitud" });
+  }
+});
+
+// 🔐 Paso 2: Recibir nueva contraseña y actualizarla
+router.post("/change-password", async (req: Request, res: any) => {
+  const { token, nuevaPassword } = req.body;
+
+  if (!token || !nuevaPassword) {
+    return res.status(400).json({ mensaje: "Token y nueva contraseña requeridos" });
+  }
+
+  try {
+    const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
+    const usuario = await Usuario.findById(decoded.id) as IUsuario;
+
+    if (!usuario) {
+      return res.status(404).json({ mensaje: "Usuario no encontrado" });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(nuevaPassword, salt);
+    usuario.contraseña = hashedPassword;
+
+    await usuario.save();
+    return res.status(200).json({ mensaje: "Contraseña actualizada correctamente" });
+
+  } catch (error) {
+    console.error("Error al actualizar contraseña:", error);
+    return res.status(401).json({ mensaje: "Token inválido o expirado" });
   }
 });
 
