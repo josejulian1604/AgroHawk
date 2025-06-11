@@ -22,6 +22,10 @@ export default [index("routes/home.tsx"),
     file: "stakeholder/stakeholder.tsx",
   },
   {
+    path: "socio/mes/:month",
+    file: "stakeholder/month-detail.tsx",
+  },
+  {
     path: "gerente",
     file: "operative-manager/ManagerPage.tsx",
   },
