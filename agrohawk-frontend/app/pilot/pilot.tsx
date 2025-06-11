@@ -1,14 +1,11 @@
 import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
+import { PieChart, Pie, Cell } from "recharts";
 import { Link } from "react-router-dom";
-import {
-  FaBars,
-  FaFolderOpen,
-  FaTimes,
-  FaWrench,
-} from "react-icons/fa";
+import { FaBars, FaFolderOpen, FaTimes } from "react-icons/fa";
 
 // Tipos
+const COLORS = ["#1F384C", "#eee"];
 
 type DecodedToken = {
   id: string;
@@ -23,6 +20,7 @@ type Proyecto = {
   cliente: string;
   ubicacion: string;
   status: string;
+  cultivo: string;
   dron: {
     modelo: string;
     placa: string;
@@ -75,6 +73,7 @@ export default function Pilot() {
               (proyecto: Proyecto) =>
                 proyecto.status?.toLowerCase() !== "completado"
             );
+            console.log("Proyectos del piloto:", proyectosFiltrados);
             setProyectos(proyectosFiltrados);
           })
           .catch((error) => {
@@ -167,7 +166,6 @@ export default function Pilot() {
             <div className="space-y-2">
               <SidebarButton label="Proyectos" icon={<FaFolderOpen />} active />
             </div>
-
             <hr className="my-4 border-gray-300" />
           </nav>
         </aside>
@@ -181,7 +179,7 @@ export default function Pilot() {
 
         <main className="flex-1 px-4 py-6 sm:px-6 md:px-8 bg-gray-50 flex flex-col items-center">
           <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-6 sm:mb-8 text-gray-800 text-center">
-            Proyecto Asignado
+            Proyectos Asignados
           </h1>
 
           {proyectos.length === 0 ? (
@@ -189,36 +187,60 @@ export default function Pilot() {
               No hay proyectos asignados.
             </p>
           ) : (
-            <Link
-              to={`/proyecto/${proyectos[0]._id}`}
-              className="w-full max-w-2xl bg-white p-4 sm:p-6 rounded-lg shadow-md border flex flex-col sm:flex-row sm:justify-between gap-4 hover:shadow-lg transition"
-            >
-              <div className="flex-1">
-                <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-800">
-                  {proyectos[0].nombre}
-                </h2>
-                <p className="text-xs sm:text-sm text-gray-500">
-                  {new Date(proyectos[0].fecha).toLocaleDateString()}
-                </p>
-                <p className="mt-2 italic text-gray-700 text-sm sm:text-base">
-                  Cliente: {proyectos[0].cliente}
-                  <br />
-                  Ubicación: {proyectos[0].ubicacion}
-                </p>
-                <div className="mt-4 border rounded p-2 bg-gray-100 text-center text-gray-800 text-sm sm:text-base">
-                  Dron: {proyectos[0].dron.modelo} ({proyectos[0].dron.placa})
-                </div>
-              </div>
+            <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2">
+              {proyectos.map((proyecto) => (
+                <Link
+                  key={proyecto._id}
+                  to={`/proyecto/${proyecto._id}`}
+                  className="bg-white p-4 sm:p-6 rounded-lg shadow-md border flex flex-col sm:flex-row sm:justify-between gap-4 hover:shadow-lg transition"
+                >
+                  <div className="flex-1">
+                    <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-800">
+                      {proyecto.nombre}
+                    </h2>
+                    <p className="text-xs sm:text-sm text-gray-500">
+                      {new Date(proyecto.fecha).toLocaleDateString()}
+                    </p>
+                    <p className="mt-2 italic text-gray-700 text-sm sm:text-base">
+                      Cliente: {proyecto.cliente}
+                      <br />
+                      Ubicación: {proyecto.ubicacion}
+                    </p>
+                    <div className="mt-4 border rounded p-2 bg-gray-100 text-center text-gray-800 text-sm sm:text-base">
+                      Dron: {proyecto.dron.modelo} ({proyecto.dron.placa})
+                    </div>
+                  </div>
 
-              <div className="flex justify-center sm:items-center">
-                <div className="h-24 w-24 sm:h-28 sm:w-28 bg-gray-200 rounded-full flex items-center justify-center text-sm text-gray-800">
-                  Gráfico
-                </div>
-              </div>
-            </Link>
+                  <div className="flex justify-center sm:items-center">
+                    <PieChart width={120} height={120}>
+                      <Pie
+                        data={[
+                          { name: "Tratado", value: 100 },
+                          { name: "Restante", value: 0 },
+                        ]}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={35}
+                        outerRadius={50}
+                        paddingAngle={0}
+                        dataKey="value"
+                      >
+                        {COLORS.map((color, i) => (
+                          <Cell key={`cell-${i}`} fill={color} />
+                        ))}
+                      </Pie>
+                    </PieChart>
+                    <p className="text-xs mt-1 text-gray-500">
+                      {proyecto.cultivo} 100%
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
           )}
         </main>
       </div>
     </div>
   );
 }
+ 
