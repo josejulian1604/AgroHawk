@@ -1,6 +1,10 @@
 import { FaFolderOpen, FaWrench } from "react-icons/fa";
 
-export default function Sidebar() {
+type Props = {
+  open: boolean;
+}
+
+export default function Sidebar({ open }: Props) {
   function SidebarButton({ label, icon, active = false }: { label: string; icon: React.ReactNode; active?: boolean }) {
     return (
       <button
@@ -15,14 +19,15 @@ export default function Sidebar() {
   }
 
   return (
-    <aside className="min-h-screen w-64 bg-gray-100 p-4 border-r shadow-lg">
+    <aside
+      className={`
+        fixed lg:static top-0 left-0 z-40 bg-gray-100 p-4 border-r shadow-lg min-h-screen lg:min-h-0 
+        lg:h-auto w-64 transform transition-transform duration-300 ease-in-out
+        ${open ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
+    >
       <nav className="space-y-4 mt-16 lg:mt-0">
         <div className="space-y-2">
           <SidebarButton label="Documentos" icon={<FaFolderOpen />} active />
-        </div>
-        <hr className="my-4 border-gray-300" />
-        <div className="space-y-2">
-          <SidebarButton label="Configuración" icon={<FaWrench />} />
         </div>
       </nav>
     </aside>
