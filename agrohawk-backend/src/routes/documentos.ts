@@ -2,7 +2,7 @@ import { Router, Request, Response } from "express";
 import Documento from "../models/Documento";
 import multer from "multer";
 import { Stream } from "stream";
-import cloudinary from "./cloudinaryConfig"; 
+import cloudinary from "./cloudinaryConfig";
 import { v2 as cloud } from "cloudinary";
 
 const router = Router();
@@ -69,6 +69,77 @@ router.get("/", async (_req: Request, res: Response) => {
   }
 });
 
+// Obtener documentos agrupados por mes
+router.get("/meses", async (_req: Request, res: Response) => {
+  try {
+    const result = await Documento.aggregate([
+      {
+        $group: {
+          _id: {
+            year: { $year: "$fechaSubida" },
+            month: { $month: "$fechaSubida" }
+          },
+          reports: { $sum: 1 },
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          month: {
+            $concat: [
+              {
+                $arrayElemAt: [
+                  [
+                    "", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+                    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+                  ],
+                  "$_id.month"
+                ]
+              },
+              " ",
+              { $toString: "$_id.year" }
+            ]
+          },
+          reports: 1
+        }
+      },
+      { $sort: { "_id.year": -1, "_id.month": -1 } }
+    ]);
+
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ mensaje: "Error al obtener documentos por mes" });
+  }
+});
+
+// Obtener documentos por mes
+router.get("/mes/:mes", async (req: Request, res: Response) => {
+  try {
+    const { mes } = req.params;
+    const [month, year] = mes.split(" ");
+    const monthNumber = [
+      "", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+      "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+    ].indexOf(month);
+
+    if (monthNumber === -1 || !year) {
+      res.status(400).json({ mensaje: "Fecha inválida" });
+      return;
+    }
+
+    const startDate = new Date(Number(year), monthNumber - 1, 1);
+    const endDate = new Date(Number(year), monthNumber, 0, 23, 59, 59);
+
+    const docs = await Documento.find({
+      fechaSubida: { $gte: startDate, $lte: endDate }
+    });
+
+    res.json(docs);
+  } catch (error) {
+    res.status(500).json({ mensaje: "Error al obtener documentos por mes", error });
+  }
+});
+
 // Filtrar por tipo
 router.get("/tipo/:tipo", async (req: Request, res: Response) => {
   try {
@@ -93,11 +164,11 @@ router.get("/buscar", async (req: Request, res: any) => {
     const query = isNaN(fecha.getTime())
       ? { nombre: { $regex: q, $options: "i" } }
       : {
-          fechaSubida: {
-            $gte: new Date(fecha.setHours(0, 0, 0, 0)),
-            $lte: new Date(fecha.setHours(23, 59, 59, 999)),
-          },
-        };
+        fechaSubida: {
+          $gte: new Date(fecha.setHours(0, 0, 0, 0)),
+          $lte: new Date(fecha.setHours(23, 59, 59, 999)),
+        },
+      };
 
     const resultados = await Documento.find(query).sort({ fechaSubida: -1 });
     res.json(resultados);
