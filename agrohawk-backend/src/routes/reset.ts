@@ -28,8 +28,6 @@ router.post("/reset-password", async (req: Request, res: any) => {
 
     const resetUrl = `${process.env.FRONTEND_BASE_URL}/reset-password/${token}`;
 
-    console.log("MAIL_USER:", process.env.MAIL_USER);
-    console.log("MAIL_PASS:", process.env.MAIL_PASS);
 
     const transporter = nodemailer.createTransport({
       service: "gmail",

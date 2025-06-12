@@ -138,15 +138,15 @@ export default function ProjectDetails() {
           ["CLIENTE", proyecto.cliente],
           ["FECHA", new Date(proyecto.fecha).toLocaleDateString('es-CR')],
           ["PILOTO", proyecto.piloto?.nombre || ""],
-          ["CULTIVO", proyecto.cultivo],
+          ["CULTIVO", proyecto.cultivo || ""],
           ["FINCA", proyecto.finca],
           ["BLOQUE", proyecto.bloque],
-          ["HECTÁREAS", proyecto.hectareas + " ha"],
-          ["PRODUCTO", proyecto.producto],
-          ["BOQUILLAS", proyecto.boquillas],
-          ["ANCHO", proyecto.anchoAplicado + " m"],
-          ["ALTURA", proyecto.alturaAplicada + " m"],
-          ["VOLUMEN", proyecto.volumenAplicado + " LTS/HA"]
+          ["HECTÁREAS", proyecto.hectareas || "" + " ha"],
+          ["PRODUCTO", proyecto.producto || ""],
+          ["BOQUILLAS", proyecto.boquillas || ""],
+          ["ANCHO", proyecto.anchoAplicado || "" + " m"],
+          ["ALTURA", proyecto.alturaAplicada || "" + " m"],
+          ["VOLUMEN", proyecto.volumenAplicado || "" + " LTS/HA"]
         ].map(([label, val]) => `
           <tr>
             <td style="border:1px solid #000; font-weight:bold; padding:6px;">${label}</td>
@@ -196,7 +196,6 @@ export default function ProjectDetails() {
     }
   
     const blob = await doc.output("blob");
-    console.log("Tamaño del blob:", blob.size);
     return URL.createObjectURL(blob);
   };
 
@@ -211,9 +210,7 @@ export default function ProjectDetails() {
 };
   
   const handleGenerarReporte = async () => {
-    console.log("Generando reporte...");
     const base64 = await generarReportePDF(proyecto);
-    console.log("Vista previa PDF generada:", base64);
     setVistaPreviaPDF(base64); 
   };
 

@@ -157,7 +157,6 @@ router.put("/:id/reporte", upload.single("reportePDF"), async (req: Request, res
     }
 
     const file = (req as MulterRequest).file;
-    console.log("Estoy en backend subiendo PDF.")
     if (!file) {
       return res.status(400).json({ mensaje: "No se subió ningún archivo." });
     }

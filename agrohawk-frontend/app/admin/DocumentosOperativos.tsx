@@ -48,7 +48,6 @@ export default function DocumentosOperativos() {
       }).toLowerCase().includes(termino)
     );
   };
-  console.log("Proyectos:", proyectos);
 
   const resultados = filtrarProyectos();
 

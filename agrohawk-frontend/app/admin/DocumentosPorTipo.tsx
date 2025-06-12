@@ -24,7 +24,6 @@ export default function DocumentosPorTipo() {
 
   // Cargar documentos al montar o al cambiar de tipo
   useEffect(() => {
-    console.log("Tipo Recibido: ", tipo);
     if (!tipo) return;
 
     const fetchData = async () => {

@@ -147,7 +147,6 @@ const handleSubirDocumento = async () => {
               if (categoria.tipo === "reporte-operativo") {
                 navigate("/documentos/reportes-operativos");
               } else {
-                console.log("Tipo: ",categoria.tipo);
                 navigate(`/documentos/${categoria.tipo}`);
               }
             }}

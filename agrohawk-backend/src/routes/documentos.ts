@@ -119,13 +119,10 @@ router.delete("/:id", async (req: Request, res: any) => {
       const filename = partes.at(-1); // archivo.pdf
       const folder = partes.at(-2);   // carpeta (ej. "documentos")
       const publicId = `${folder}/${filename}`;
-      console.log("🔑 Public ID exacto:", publicId);
 
       const result = await cloudinary.uploader.destroy(publicId, {
         resource_type: "raw"
       });
-
-      console.log("🧹 Resultado eliminación:", result);
     }
 
     await documento.deleteOne();

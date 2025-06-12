@@ -14,7 +14,6 @@ export default function Login() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("User: ", correo);
     try {
       const response = await fetch("http://localhost:3000/api/auth/login", {
         method: "POST",

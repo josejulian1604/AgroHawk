@@ -73,7 +73,6 @@ export default function Pilot() {
               (proyecto: Proyecto) =>
                 proyecto.status?.toLowerCase() !== "completado"
             );
-            console.log("Proyectos del piloto:", proyectosFiltrados);
             setProyectos(proyectosFiltrados);
           })
           .catch((error) => {
