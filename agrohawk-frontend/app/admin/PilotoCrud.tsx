@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import AdminLayout from "../../components/AdminLayout";
 import { FaRegEdit, FaTrashAlt, FaPlus } from "react-icons/fa";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"
 
 type Piloto = {
   _id: string;
@@ -146,13 +148,14 @@ export default function PilotoCrud() {
       setPilotoAEliminar(null);
     } catch (error: any) {
       console.error(error);
-      alert(error.message || "Error al eliminar");
+      toast.error(error.message || "Error al eliminar");
     }
   };
 
 
   return (
     <AdminLayout current="Pilotos">
+      <ToastContainer position="bottom-right" autoClose={3000} />
       <div className="flex justify-between">
         <h1 className="text-2xl font-bold mb-6 text-gray-800">Pilotos</h1>
         <button

@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import AdminLayout from "../../components/AdminLayout";
 import { FaRegEdit, FaTrashAlt, FaPlus } from "react-icons/fa";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"
 
 type Admin = {
   _id: string;
@@ -168,27 +170,6 @@ export default function AdminCrud() {
     }
   };
 
-  const handleEliminarAdmin = async (id: string) => {
-    const confirmar = window.confirm("¿Estás seguro de que deseas eliminar este administrador?");
-    if (!confirmar) return;
-
-    try {
-      const response = await fetch(`/api/users/${id}`, {
-        method: "DELETE",
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) throw new Error(data.mensaje || "Error al eliminar administrador");
-
-      // Eliminar del estado
-      setAdmins((prev) => prev.filter((admin) => admin._id !== id));
-    } catch (error: any) {
-      console.error(error);
-      alert(error.message || "Error al eliminar");
-    }
-  };
-
   const [adminAEliminar, setAdminAEliminar] = useState<Admin | null>(null);
   const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false);
 
@@ -208,13 +189,14 @@ export default function AdminCrud() {
       setAdminAEliminar(null);
     } catch (error: any) {
       console.error(error);
-      alert(error.message || "Error al eliminar");
+      toast.error(error.message || "Error al eliminar");
     }
   };
 
 
   return (
     <AdminLayout current="Administradores">
+      <ToastContainer position="bottom-right" autoClose={3000} />
       <div className="flex justify-between">
         <h1 className="text-2xl font-bold mb-6 text-gray-800">Administradores</h1>
         <button

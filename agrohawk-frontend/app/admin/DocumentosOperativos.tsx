@@ -48,7 +48,6 @@ export default function DocumentosOperativos() {
       }).toLowerCase().includes(termino)
     );
   };
-  console.log("Proyectos:", proyectos);
 
   const resultados = filtrarProyectos();
 
@@ -105,6 +104,8 @@ export default function DocumentosOperativos() {
                       <a
                         key={i}
                         href={img}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         download={`boleta-${i + 1}.png`}
                         className="text-blue-600 underline block"
                       >
@@ -116,6 +117,8 @@ export default function DocumentosOperativos() {
                     {proy.reportePDF ? (
                       <a
                         href={proy.reportePDF}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         download="reporte.pdf"
                         className="text-blue-600 underline"
                       >
@@ -140,7 +143,7 @@ export default function DocumentosOperativos() {
                       <p className="text-sm font-medium mb-1">
                         Boleta {i + 1}
                       </p>
-                      <a href={img} download={`Boleta_${i + 1}.png`}>
+                      <a href={img} target="_blank" rel="noopener noreferrer" download={`Boleta_${i + 1}.png`}>
                         <img
                           src={img}
                           alt={`Boleta ${i + 1}`}
@@ -151,15 +154,15 @@ export default function DocumentosOperativos() {
                     </div>
                   ))}
                 </div>
-                antes
-                <a href={proy.imagenRecorrido}>
+                {proy.imagenRecorrido && (
+                <a href={proy.imagenRecorrido} target="_blank" rel="noopener noreferrer">
                   <img
                       src={proy.imagenRecorrido}
                       alt={`Recorrido`}
-                      className="w-full h-auto rounded shadow"
+                      className="w-full h-auto rounded shadow mt-4"
                     />
                 </a>
-                Holallala
+                )}
               </div>
             ))}
           </div>

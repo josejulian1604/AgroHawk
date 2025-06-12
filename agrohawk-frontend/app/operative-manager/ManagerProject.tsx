@@ -93,15 +93,15 @@ export default function ManagerProject() {
         ["CLIENTE", proyecto.cliente],
         ["FECHA", new Date(proyecto.fecha).toLocaleDateString('es-CR')],
         ["PILOTO", proyecto.piloto?.nombre || ""],
-        ["CULTIVO", proyecto.cultivo],
+        ["CULTIVO", proyecto.cultivo || ""],
         ["FINCA", proyecto.finca],
         ["BLOQUE", proyecto.bloque],
-        ["HECTÁREAS", proyecto.hectareas + " ha"],
-        ["PRODUCTO", proyecto.producto],
-        ["BOQUILLAS", proyecto.boquillas],
-        ["ANCHO", proyecto.anchoAplicado + " m"],
-        ["ALTURA", proyecto.alturaAplicada + " m"],
-        ["VOLUMEN", proyecto.volumenAplicado + " LTS/HA"]
+        ["HECTÁREAS", proyecto.hectareas || "" + " ha"],
+        ["PRODUCTO", proyecto.producto || ""],
+        ["BOQUILLAS", proyecto.boquillas || ""],
+        ["ANCHO", proyecto.anchoAplicado || "" + " m"],
+        ["ALTURA", proyecto.alturaAplicada || "" + " m"],
+        ["VOLUMEN", proyecto.volumenAplicado || "" + " LTS/HA"]
       ].map(([label, val]) => `
         <tr>
           <td style="border:1px solid #000; font-weight:bold; padding:6px;">${label}</td>
@@ -151,7 +151,6 @@ export default function ManagerProject() {
   }
 
   const blob = await doc.output("blob");
-  console.log("Tamaño del blob:", blob.size);
   return URL.createObjectURL(blob);
 };
 
@@ -167,9 +166,7 @@ const cargarImagen = (src: string): Promise<HTMLImageElement> => {
 };
   
   const handleGenerarReporte = async () => {
-    console.log("Generando reporte...");
     const base64 = await generarReportePDF(proyecto);
-    console.log("Vista previa PDF generada:", base64);
     setVistaPreviaPDF(base64); 
   };
 
@@ -201,11 +198,11 @@ const cargarImagen = (src: string): Promise<HTMLImageElement> => {
       if (!res.ok) throw new Error("Error al subir recorrido");
   
       const data = await res.json();
-      alert("Recorrido agregado correctamente.");
+      toast.success("Recorrido agregado correctamente.");
       setProyecto((prev) => prev ? { ...prev, imagenRecorrido: data.imagenRecorrido } : prev);
     } catch (err) {
       console.error("Error al subir recorrido", err);
-      alert("Error al subir recorrido.");
+      toast.error("Error al subir recorrido.");
     }
   };
 
@@ -226,19 +223,16 @@ const cargarImagen = (src: string): Promise<HTMLImageElement> => {
       setNuevoComentario("");
     } catch (err) {
       console.error("Error:", err);
-      alert("No se pudo agregar el comentario.");
+      toast.error("No se pudo agregar el comentario.");
     }
   };
 
   const handleCambiarEstado = async () => {
-    console.log("El estado de la base es: ", proyecto.status)
-    console.log("El estado antes de guardar en base es: ", nuevoEstado)
     if (!proyecto) return;
   
     try {
       // Si se marca como completado, generar PDF y subirlo
       if (nuevoEstado === "completado") {
-        console.log("¿Lo detecta como igual? ", nuevoEstado)
         const blobURL = await generarReportePDF(proyecto);
   
         const blob = await fetch(blobURL).then(res => res.blob());
@@ -252,7 +246,6 @@ const cargarImagen = (src: string): Promise<HTMLImageElement> => {
         });
 
         if (!resPDF.ok) throw new Error("Error al subir el PDF");
-        if (resPDF.ok) console.log("Todo bien con el pdf en la base.")
       }
   
       // Luego actualizar el estado
@@ -266,10 +259,10 @@ const cargarImagen = (src: string): Promise<HTMLImageElement> => {
   
       const data = await resEstado.json();
       setProyecto(data.proyecto);
-      alert("Estado actualizado correctamente.");
+      toast.success("Estado actualizado correctamente.");
     } catch (err) {
       console.error("Error al cambiar estado:", err);
-      alert("Ocurrió un error al cambiar el estado.");
+      toast.error("Ocurrió un error al cambiar el estado.");
     }
   };
   
