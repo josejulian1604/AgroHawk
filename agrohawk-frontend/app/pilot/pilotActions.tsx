@@ -4,7 +4,6 @@ import {
   FaBars,
   FaFolderOpen,
   FaTimes,
-  FaWrench,
   FaTrash,
   FaImage,
   FaPlus,
@@ -24,17 +23,28 @@ export default function PilotProjectPage() {
   const [menuAbierto, setMenuAbierto] = useState(false);
   const [imagenes, setImagenes] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [mensaje, setMensaje] = useState<{
+    tipo: "success" | "error";
+    texto: string;
+  } | null>(null);
 
   useEffect(() => {
     if (!id) return;
 
-    fetch(`http://localhost:3000/api/proyectos/${id}`)
+    fetch(`/api/proyectos/${id}`)
       .then((res) => res.json())
       .then((data) => setProyecto(data))
       .catch((error) => {
         console.error("Error al obtener proyecto:", error);
       });
   }, [id]);
+
+  useEffect(() => {
+    if (mensaje) {
+      const timeout = setTimeout(() => setMensaje(null), 5000);
+      return () => clearTimeout(timeout);
+    }
+  }, [mensaje]);
 
   function SidebarButton({
     label,
@@ -61,9 +71,7 @@ export default function PilotProjectPage() {
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
-    // Agregar nuevos archivos a los existentes
     setImagenes((prev) => [...prev, ...files]);
-    // Limpiar el input para poder seleccionar los mismos archivos de nuevo si es necesario
     event.target.value = "";
   };
 
@@ -87,24 +95,24 @@ export default function PilotProjectPage() {
     imagenes.forEach((img) => formData.append("imagenes", img));
 
     try {
-      const res = await fetch(
-        `http://localhost:3000/api/proyectos/${id}/subir-boletas`,
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
+      const res = await fetch(`/api/proyectos/${id}/subir-boletas`, {
+        method: "POST",
+        body: formData,
+      });
 
       const data = await res.json();
       if (res.ok) {
-        toast.success("Imágenes subidas correctamente.");
+        setMensaje({ tipo: "success", texto: "Imágenes subidas correctamente." });
         setImagenes([]);
       } else {
-        toast.error("Error al subir imágenes: " + data.mensaje);
+        setMensaje({
+          tipo: "error",
+          texto: "Error al subir imágenes: " + data.mensaje,
+        });
       }
     } catch (error) {
       console.error("Error al subir imágenes:", error);
-      toast.error("Ocurrió un error al subir las imágenes.");
+      setMensaje({ tipo: "error", texto: "Ocurrió un error al subir las imágenes." });
     } finally {
       setUploading(false);
     }
@@ -169,11 +177,10 @@ export default function PilotProjectPage() {
             <hr className="my-4 border-gray-300" />
           </nav>
 
-          {/* Botón de salir */}
           <div className="absolute bottom-6 left-4 w-[calc(100%-2rem)]">
             <button
               onClick={() => {
-                window.location.href = "/piloto"; // cambia si tu ruta es diferente
+                window.location.href = "/piloto";
               }}
               className="w-full flex items-center justify-center px-3 py-2 bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition-colors font-semibold"
             >
@@ -196,12 +203,23 @@ export default function PilotProjectPage() {
                 Nombre del Proyecto: {proyecto.nombre}
               </h1>
 
+              {mensaje && (
+                <div
+                  className={`w-full max-w-2xl px-4 py-3 mb-6 rounded-md text-sm font-medium ${
+                    mensaje.tipo === "success"
+                      ? "bg-green-100 text-green-800 border border-green-300"
+                      : "bg-red-100 text-red-800 border border-red-300"
+                  }`}
+                >
+                  {mensaje.texto}
+                </div>
+              )}
+
               <div className="w-full max-w-2xl flex flex-col items-center">
                 <h2 className="mb-4 text-xl font-semibold text-gray-700">
                   Gestión de Imágenes de Boletas
                 </h2>
 
-                {/* Área de selección de archivos */}
                 <label
                   htmlFor="file-upload"
                   className="cursor-pointer border-2 border-dashed border-gray-400 rounded-lg p-6 w-full text-center bg-white mb-6 hover:border-blue-400 transition-colors"
@@ -225,7 +243,6 @@ export default function PilotProjectPage() {
                   className="hidden"
                 />
 
-                {/* Lista de archivos seleccionados */}
                 {imagenes.length > 0 && (
                   <div className="w-full bg-white rounded-lg shadow-md mb-6">
                     <div className="flex items-center justify-between p-4 border-b">
@@ -272,7 +289,6 @@ export default function PilotProjectPage() {
                   </div>
                 )}
 
-                {/* Botón de subida */}
                 <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md">
                   <button
                     onClick={handleUpload}

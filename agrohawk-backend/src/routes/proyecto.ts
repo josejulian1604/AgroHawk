@@ -77,7 +77,6 @@ router.get("/piloto/:pilotoId", async (req: Request, res: any) => {
       });
     }
 
-    console.log(proyectos.length); 
 
     res.status(200).json({
       mensaje: `Se encontraron ${proyectos.length} proyecto(s) para el piloto`,
