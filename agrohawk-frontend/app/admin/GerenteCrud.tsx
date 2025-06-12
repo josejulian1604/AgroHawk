@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import AdminLayout from "../../components/AdminLayout";
 import { FaRegEdit, FaTrashAlt, FaPlus } from "react-icons/fa";
 import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css"
+import "react-toastify/dist/ReactToastify.css";
+import { API_BASE } from "../../config";
 
 type Gerente = {
   _id: string;
@@ -20,7 +21,7 @@ export default function GerenteCrud() {
   useEffect(() => {
     const obtenerGerentes = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/gerentes");
+        const response = await fetch(`${API_BASE}/api/gerentes`);
         if (!response.ok) {
           throw new Error("Error al obtener gerentes operativos.");
         }
@@ -80,8 +81,8 @@ export default function GerenteCrud() {
 
     try {
       const url = gerenteEnEdicionId
-        ? `/api/users/${gerenteEnEdicionId}`
-        : "/api/users";
+        ? `${API_BASE}/api/users/${gerenteEnEdicionId}`
+        : `${API_BASE}/api/users`;
 
       const method = gerenteEnEdicionId ? "PUT" : "POST";
 
@@ -136,7 +137,7 @@ export default function GerenteCrud() {
     if (!gerenteAEliminar) return;
     
     try {
-      const response = await fetch(`/api/users/${gerenteAEliminar._id}`, {
+      const response = await fetch(`${API_BASE}/api/users/${gerenteAEliminar._id}`, {
         method: "DELETE",
       });
     

@@ -4,7 +4,8 @@ import { Link } from "react-router-dom";
 import { PieChart, Pie, Cell } from "recharts";
 import { FaMedal, FaPlus } from "react-icons/fa";
 import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css"
+import "react-toastify/dist/ReactToastify.css";
+import { API_BASE } from "../../config";
 
 type Proyecto = {
   _id: string;
@@ -64,7 +65,7 @@ export default function ManagerPage() {
   useEffect(() => {
     const fetchProyectos = async () => {
       try {
-        const res = await fetch("/api/proyectos");
+        const res = await fetch(`${API_BASE}/api/proyectos`);
         const data = await res.json();
         setProyectos(data);
       } catch (err) {
@@ -77,8 +78,8 @@ export default function ManagerPage() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const resPilotos = await fetch("/api/pilotos");
-      const resDrones = await fetch("/api/drones");
+      const resPilotos = await fetch(`${API_BASE}/api/pilotos`);
+      const resDrones = await fetch(`${API_BASE}/api/drones`);
       const pilotosData = await resPilotos.json();
       const dronesData = await resDrones.json();
   
@@ -97,7 +98,7 @@ export default function ManagerPage() {
     const creadoPor = decoded?.id;
   
     try {
-      const res = await fetch("/api/proyectos", {
+      const res = await fetch(`${API_BASE}/api/proyectos`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...nuevoProyecto, creadoPor }),

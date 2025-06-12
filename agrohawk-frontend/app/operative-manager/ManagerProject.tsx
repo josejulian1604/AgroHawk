@@ -6,6 +6,7 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas-pro';
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import { API_BASE } from "../../config";
 
 type Proyecto = {
   _id: string;
@@ -46,7 +47,7 @@ export default function ManagerProject() {
   useEffect(() => {
     const fetchProyecto = async () => {
       try {
-        const res = await fetch(`/api/proyectos/${id}`);
+        const res = await fetch(`${API_BASE}/api/proyectos/${id}`);
         const data = await res.json();
         setProyecto(data);
         setNuevoEstado(data.status || "");
@@ -190,7 +191,7 @@ const cargarImagen = (src: string): Promise<HTMLImageElement> => {
     formData.append("imagen", file);
   
     try {
-      const res = await fetch(`/api/proyectos/${proyecto._id}/subir-recorrido`, {
+      const res = await fetch(`${API_BASE}/api/proyectos/${proyecto._id}/subir-recorrido`, {
         method: "POST",
         body: formData, 
       });
@@ -210,7 +211,7 @@ const cargarImagen = (src: string): Promise<HTMLImageElement> => {
     if (!nuevoComentario.trim() || !proyecto?._id) return;
   
     try {
-      const res = await fetch(`/api/proyectos/${proyecto._id}/comentario`, {
+      const res = await fetch(`${API_BASE}/api/proyectos/${proyecto._id}/comentario`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ texto: nuevoComentario.trim() }),
@@ -240,7 +241,7 @@ const cargarImagen = (src: string): Promise<HTMLImageElement> => {
         const formData = new FormData();
         formData.append("reportePDF", blob, "reporte.pdf"); 
 
-        const resPDF = await fetch(`/api/proyectos/${proyecto._id}/reporte`, {
+        const resPDF = await fetch(`${API_BASE}/api/proyectos/${proyecto._id}/reporte`, {
           method: "PUT",
           body: formData, 
         });
@@ -249,7 +250,7 @@ const cargarImagen = (src: string): Promise<HTMLImageElement> => {
       }
   
       // Luego actualizar el estado
-      const resEstado = await fetch(`/api/proyectos/${proyecto._id}`, {
+      const resEstado = await fetch(`${API_BASE}/api/proyectos/${proyecto._id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: nuevoEstado }),
@@ -270,7 +271,7 @@ const cargarImagen = (src: string): Promise<HTMLImageElement> => {
     if (!proyectoAEliminar) return;
     
     try {
-      const response = await fetch(`/api/proyectos/${proyectoAEliminar._id}`, {
+      const response = await fetch(`${API_BASE}/api/proyectos/${proyectoAEliminar._id}`, {
         method: "DELETE",
       });
     

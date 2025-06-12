@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import AdminLayout from '../../components/AdminLayout';
 import esLocale from '@fullcalendar/core/locales/es';
 import { useNavigate } from 'react-router-dom';
+import { API_BASE } from "../../config";
 
 interface EventoCalendario {
   title: string;
@@ -26,7 +27,7 @@ export default function Calendar() {
   useEffect(() => {
     const cargarEventos = async () => {
       try {
-        const res = await fetch('/api/proyectos');
+        const res = await fetch(`${API_BASE}/api/proyectos`);
         const data = await res.json();
 
         const eventosFormateados = data.map((proyecto: any) => {

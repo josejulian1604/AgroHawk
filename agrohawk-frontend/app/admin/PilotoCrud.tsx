@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import AdminLayout from "../../components/AdminLayout";
 import { FaRegEdit, FaTrashAlt, FaPlus } from "react-icons/fa";
 import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css"
+import "react-toastify/dist/ReactToastify.css";
+import { API_BASE } from "../../config";
 
 type Piloto = {
   _id: string;
@@ -20,7 +21,7 @@ export default function PilotoCrud() {
   useEffect(() => {
     const obtenerPilotos = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/pilotos");
+        const response = await fetch(`${API_BASE}/api/pilotos`);
         if (!response.ok) {
           throw new Error("Error al obtener pilotos.");
         }
@@ -80,8 +81,8 @@ export default function PilotoCrud() {
 
     try {
       const url = pilotoEnEdicionId
-        ? `/api/users/${pilotoEnEdicionId}`
-        : "/api/users";
+        ? `${API_BASE}/api/users/${pilotoEnEdicionId}`
+        : `${API_BASE}/api/users`;
 
       const method = pilotoEnEdicionId ? "PUT" : "POST";
 
@@ -136,7 +137,7 @@ export default function PilotoCrud() {
     if (!pilotoAEliminar) return;
     
     try {
-      const response = await fetch(`/api/users/${pilotoAEliminar._id}`, {
+      const response = await fetch(`${API_BASE}/api/users/${pilotoAEliminar._id}`, {
         method: "DELETE",
       });
     

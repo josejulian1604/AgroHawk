@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import AdminLayout from "../../components/AdminLayout";
 import { FaPlus, FaRegEdit, FaTrashAlt } from "react-icons/fa";
 import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css"
+import "react-toastify/dist/ReactToastify.css";
+import { API_BASE } from "../../config";
 
 type Dron = {
   _id: string;
@@ -34,7 +35,7 @@ export default function DronesInventory() {
     if (!dronAEliminar) return;
     
     try {
-      const response = await fetch(`/api/drones/${dronAEliminar._id}`, {
+      const response = await fetch(`${API_BASE}/api/drones/${dronAEliminar._id}`, {
         method: "DELETE",
       });
     
@@ -54,7 +55,7 @@ export default function DronesInventory() {
     if (!window.confirm("¿Seguro que quieres eliminar este dron?")) return;
 
     try {
-      const res = await fetch(`/api/drones/${id}`, { method: "DELETE" });
+      const res = await fetch(`${API_BASE}/api/drones/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Error al eliminar");
 
       setDrones((prev) => prev.filter((d) => d._id !== id));
@@ -85,7 +86,7 @@ export default function DronesInventory() {
   useEffect(() => {
     const fetchDrones = async () => {
       try {
-        const res = await fetch("/api/drones");
+        const res = await fetch(`${API_BASE}/api/drones`);
         const data = await res.json();
         setDrones(data);
       } catch (error) {
@@ -112,7 +113,7 @@ export default function DronesInventory() {
   const handleGuardar = async () => {
     try {
       const metodo = dronEditando ? "PUT" : "POST";
-      const url = dronEditando ? `/api/drones/${dronEditando._id}` : "/api/drones";
+      const url = dronEditando ? `${API_BASE}/api/drones/${dronEditando._id}` : `${API_BASE}/api/drones`;
 
       const res = await fetch(url, {
         method: metodo,

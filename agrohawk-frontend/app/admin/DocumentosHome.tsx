@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
 import { useDropzone } from "react-dropzone";
+import { API_BASE } from "../../config";
 
 const categorias = [
   {
@@ -40,7 +41,7 @@ export default function DocumentosHome() {
   const [usuarioId, setUsuarioId] = useState("");
   
  useEffect(() => {
-   fetch("/api/proyectos") 
+   fetch(`${API_BASE}/api/proyectos`)
      .then(res => res.json())
      .then(data => setProyectos(data))
      .catch(() => setProyectos([]));
@@ -100,7 +101,7 @@ const handleSubirDocumento = async () => {
       formData.append("relacionadoAProyecto", proyectoId);
     }
 
-    const res = await fetch("/api/documentos", {
+    const res = await fetch(`${API_BASE}/api/documentos`, {
       method: "POST",
       body: formData,
     });

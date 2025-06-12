@@ -8,6 +8,7 @@ import {
   FaImage,
   FaPlus,
 } from "react-icons/fa";
+import { API_BASE } from "../../config";
 
 type Proyecto = {
   _id: string;
@@ -29,7 +30,7 @@ export default function PilotProjectPage() {
   useEffect(() => {
     if (!id) return;
 
-    fetch(`/api/proyectos/${id}`)
+    fetch(`${API_BASE}/api/proyectos/${id}`)
       .then((res) => res.json())
       .then((data) => setProyecto(data))
       .catch((error) => {

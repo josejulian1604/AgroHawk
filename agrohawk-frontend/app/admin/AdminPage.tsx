@@ -3,6 +3,7 @@ import AdminLayout from "../../components/AdminLayout";
 import { Link } from "react-router-dom";
 import { PieChart, Pie, Cell } from "recharts";
 import { FaMedal } from "react-icons/fa";
+import { API_BASE } from "../../config";
 
 type Proyecto = {
   _id: string;
@@ -34,7 +35,7 @@ export default function AdminPage() {
   useEffect(() => {
     const fetchProyectos = async () => {
       try {
-        const res = await fetch("/api/proyectos");
+        const res = await fetch(`${API_BASE}/api/proyectos`);
         const data = await res.json();
         setProyectos(data);
       } catch (err) {

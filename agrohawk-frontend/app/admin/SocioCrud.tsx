@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import AdminLayout from "../../components/AdminLayout";
 import { FaRegEdit, FaTrashAlt, FaPlus } from "react-icons/fa";
+import { API_BASE } from "../../config";
 
 type Socio = {
   _id: string;
@@ -18,7 +19,7 @@ export default function SocioCrud() {
   useEffect(() => {
     const obtenerSocios = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/socios");
+        const response = await fetch(`${API_BASE}/api/socios`);
         if (!response.ok) {
           throw new Error("Error al obtener socios.");
         }
@@ -78,8 +79,8 @@ export default function SocioCrud() {
 
     try {
       const url = socioEnEdicionId
-        ? `/api/users/${socioEnEdicionId}`
-        : "/api/users";
+        ? `${API_BASE}/api/users/${socioEnEdicionId}`
+        : `${API_BASE}/api/users`;
 
       const method = socioEnEdicionId ? "PUT" : "POST";
 
@@ -134,7 +135,7 @@ export default function SocioCrud() {
     if (!socioAEliminar) return;
     
     try {
-      const response = await fetch(`/api/users/${socioAEliminar._id}`, {
+      const response = await fetch(`${API_BASE}/api/users/${socioAEliminar._id}`, {
         method: "DELETE",
       });
     

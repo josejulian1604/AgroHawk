@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { PieChart, Pie, Cell } from "recharts";
 import { Link } from "react-router-dom";
 import { FaBars, FaFolderOpen, FaTimes } from "react-icons/fa";
+import { API_BASE } from "../../config";
 
 // Tipos
 const COLORS = ["#1F384C", "#eee"];
@@ -66,7 +67,7 @@ export default function Pilot() {
           return;
         }
 
-        fetch(`http://localhost:3000/api/proyectos/piloto/${decoded.id}`)
+        fetch(`${API_BASE}/api/proyectos/piloto/${decoded.id}`)
           .then((res) => res.json())
           .then((data) => {
             const proyectosFiltrados = (data.proyectos || data).filter(

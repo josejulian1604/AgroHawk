@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import GerenteLayout from 'components/GerenteLayout';
 import { toast } from 'react-toastify';
 import { data } from 'react-router';
+import { API_BASE } from "../../config";
 
 interface EventoCalendario {
   title: string;
@@ -39,7 +40,7 @@ export default function Calendar() {
   useEffect(() => {
     const cargarEventos = async () => {
       try {
-        const res = await fetch('/api/proyectos');
+        const res = await fetch(`${API_BASE}/api/proyectos`);
         const data = await res.json();
 
         const eventosFormateados = data.map((proyecto: any) => {
@@ -68,8 +69,8 @@ export default function Calendar() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const resPilotos = await fetch("/api/pilotos");
-      const resDrones = await fetch("/api/drones");
+      const resPilotos = await fetch(`${API_BASE}/api/pilotos`);
+      const resDrones = await fetch(`${API_BASE}/api/drones`);
       const pilotosData = await resPilotos.json();
       const dronesData = await resDrones.json();
   
@@ -92,7 +93,7 @@ export default function Calendar() {
     const creadoPor = decoded?.id;
 
     try {
-      const res = await fetch('/api/proyectos', {
+      const res = await fetch(`${API_BASE}/api/proyectos`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...nuevoProyecto, creadoPor })

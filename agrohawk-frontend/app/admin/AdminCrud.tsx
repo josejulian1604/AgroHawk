@@ -3,6 +3,7 @@ import AdminLayout from "../../components/AdminLayout";
 import { FaRegEdit, FaTrashAlt, FaPlus } from "react-icons/fa";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"
+import { API_BASE } from "../../config";
 
 type Admin = {
   _id: string;
@@ -20,7 +21,7 @@ export default function AdminCrud() {
   useEffect(() => {
     const obtenerAdmins = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/admins");
+        const response = await fetch(`${API_BASE}/api/admins`);
         if (!response.ok) {
           throw new Error("Error al obtener administradores");
         }
@@ -54,7 +55,7 @@ export default function AdminCrud() {
     }
 
     try {
-      const response = await fetch("/api/users", {
+      const response = await fetch(`${API_BASE}/api/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -120,8 +121,8 @@ export default function AdminCrud() {
 
     try {
       const url = adminEnEdicionId
-        ? `/api/users/${adminEnEdicionId}`
-        : "/api/users";
+        ? `${API_BASE}/api/users/${adminEnEdicionId}`
+        : `${API_BASE}/api/users`;
 
       const method = adminEnEdicionId ? "PUT" : "POST";
 
@@ -177,7 +178,7 @@ export default function AdminCrud() {
     if (!adminAEliminar) return;
     
     try {
-      const response = await fetch(`/api/users/${adminAEliminar._id}`, {
+      const response = await fetch(`${API_BASE}/api/users/${adminAEliminar._id}`, {
         method: "DELETE",
       });
     

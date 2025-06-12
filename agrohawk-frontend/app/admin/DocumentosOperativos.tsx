@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import AdminLayout from "../../components/AdminLayout";
 import { FaArrowCircleLeft } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { API_BASE } from "../../config";
 
 interface Proyecto {
   _id: string;
@@ -20,7 +21,7 @@ export default function DocumentosOperativos() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("/api/proyectos/reportes-operativos")
+    fetch(`${API_BASE}/api/proyectos/reportes-operativos`)
       .then((res) => res.json())
       .then((data) => {
         setProyectos(data);

@@ -3,7 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import AdminLayout from "../../components/AdminLayout";
 import { FaArrowCircleLeft } from "react-icons/fa";
 import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css"
+import "react-toastify/dist/ReactToastify.css";
+import { API_BASE } from "../../config";
 
 interface Documento {
   _id: string;
@@ -29,7 +30,7 @@ export default function DocumentosPorTipo() {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`/api/documentos/tipo/${tipo}`);
+        const res = await fetch(`${API_BASE}/api/documentos/tipo/${tipo}`);
         const data = await res.json();
         setDocumentos(data);
       } catch (error) {
@@ -53,7 +54,7 @@ export default function DocumentosPorTipo() {
       if (!docAEliminar) return;
       
       try {
-        const response = await fetch(`/api/documentos/${docAEliminar._id}`, {
+        const response = await fetch(`${API_BASE}/api/documentos/${docAEliminar._id}`, {
           method: "DELETE",
         });
       

@@ -4,6 +4,7 @@ import AdminLayout from "../../components/AdminLayout";
 import { FaArrowCircleLeft } from "react-icons/fa";
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas-pro';
+import { API_BASE } from "../../config";
 
 type Proyecto = {
   _id: string;
@@ -72,7 +73,7 @@ export default function ProjectDetails() {
 
   const handleGuardarCambios = async () => {
     try {
-      const res = await fetch(`/api/proyectos/${id}`, {
+      const res = await fetch(`${API_BASE}/api/proyectos/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData)
@@ -92,7 +93,7 @@ export default function ProjectDetails() {
   useEffect(() => {
     const fetchProyecto = async () => {
       try {
-        const res = await fetch(`/api/proyectos/${id}`);
+        const res = await fetch(`${API_BASE}/api/proyectos/${id}`);
         const data = await res.json();
         setProyecto(data);
       } catch (error) {
