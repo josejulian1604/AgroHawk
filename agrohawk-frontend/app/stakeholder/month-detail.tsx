@@ -1,32 +1,60 @@
 import Navbar from "../../components/Navbar";
 import Sidebar from "../../components/Sidebar";
 import { useParams } from "react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaBars, FaTimes } from "react-icons/fa";
+import { getDocumentsByMonth } from "services/documentService";
+import type { Document } from "services/documentService";
+
 
 export default function StakeholderMonthDetail() {
-  const { month } = useParams<{ month: string }>();
+  const { month } = useParams();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
-  // Datos genéricos de ejemplo con nombre del documento
-  const documentos = [
-    { nombre: "Minuta 6 - Proyecto Caribe", tipo: "PDF", tipoDoc: "Minutas", titulo: "Minuta - Reunión Inicial", fecha: "7 de abril, 2025" },
-    { nombre: "Presentación Avance - Proyecto Caribe", tipo: "PPT", tipoDoc: "Presentaciones", titulo: "Presentación Avance", fecha: "7 de abril, 2025" },
-    { nombre: "Estado Financiero - Proyecto Caribe", tipo: "XLS", tipoDoc: "Estados Financieros", titulo: "Estado Financiero", fecha: "7 de abril, 2025" },
-    { nombre: "Reporte Técnico Final - Proyecto Caribe", tipo: "DOC", tipoDoc: "Documentos", titulo: "Reporte Técnico Final", fecha: "7 de abril, 2025" },
-  ];
-
+  const [documentos, setDocumentos] = useState<Document[]>([]);
   const [filtro, setFiltro] = useState("Resumen");
+
+  useEffect(() => {
+    async function fetchDocs() {
+      try {
+        const data = await getDocumentsByMonth(month || "");
+        setDocumentos(data);
+      } catch (error) {
+        console.error("Error al obtener documentos por mes: ", error);
+      }
+    }
+
+    fetchDocs();
+  }, [month]);
+
+  const obtenerExtension = (url: string) => {
+    const parts = url.split(".");
+    return parts[parts.length - 1].toLowerCase();
+  };
+
+  const extensionToTipo = (ext: string) => {
+    if (ext === "pdf") return "PDF";
+    if (["xls", "xlsx"].includes(ext)) return "XLS";
+    if (["ppt", "pptx"].includes(ext)) return "PPT";
+    if (["doc", "docx"].includes(ext)) return "DOC";
+    return "OTRO";
+  };
+
+  const extensionToTipoDoc = (tipo: string) => {
+    if (tipo.includes("minuta")) return "Minutas";
+    if (tipo.includes("presentacion")) return "Presentaciones";
+    if (tipo.includes("estado")) return "Estados Financieros";
+    return "Documentos";
+  };
 
   const documentosFiltrados = filtro === "Resumen"
     ? documentos
-    : documentos.filter((doc) => doc.tipoDoc === filtro);
+    : documentos.filter((doc) => extensionToTipoDoc(doc.tipo.toLocaleLowerCase()) === filtro);
 
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
       <div className="flex flex-1">
-        <Sidebar />
+        <Sidebar open={sidebarOpen} />
         <button
           className="lg:hidden absolute top-4 left-2 z-50 text-white bg-blue-800 p-2 rounded-md shadow-md"
           onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -34,78 +62,91 @@ export default function StakeholderMonthDetail() {
           {sidebarOpen ? <FaTimes size={20} /> : <FaBars size={20} />}
         </button>
 
-        <main className="flex-1 p-8 bg-gray-50">
-          <h1 className="text-3xl font-bold mb-6 text-gray-800">
+        <main className="flex-1 px-4 sm:px-6 lg:px-8 py-6 bg-gray-50 mx-auto w-full">
+          <h1 className="text-xl sm:text-2xl font-bold mb-6 text-gray-800">
             Detalles de {decodeURIComponent(month || "")}
           </h1>
 
           {/* Tabla de documentos */}
           <div className="bg-white rounded shadow border">
-            <div className="flex space-x-4 border-b overflow-x-auto">
+            {/* Tabs */}
+            <div className="flex space-x-4 border-b overflow-x-auto text-sm sm:text-base">
               {["Resumen", "Minutas", "Presentaciones", "Estados Financieros", "Documentos"].map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setFiltro(tab)}
-                  className={`py-2 px-4 font-medium ${
-                    filtro === tab ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-600 hover:text-blue-600"
-                  }`}
+                  className={`whitespace-nowrap py-2 px-4 font-medium ${filtro === tab ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-600 hover:text-blue-600"
+                    }`}
                 >
                   {tab}
                 </button>
               ))}
             </div>
 
+            {/* Contenido de documentos filtrados */}
             <div className="p-4">
               {documentosFiltrados.length > 0 ? (
-                documentosFiltrados.map((doc, i) => (
-                  <div
-                    key={i}
-                    className="flex flex-col md:flex-row md:items-center justify-between border rounded p-2 shadow-sm bg-white mb-2"
-                  >
-                    <div className="flex items-center gap-2">
-                      <div
-                        className={`px-2 py-1 rounded text-xs font-bold text-white ${
-                          doc.tipo === "PDF"
-                            ? "bg-red-500"
-                            : doc.tipo === "PPT"
-                            ? "bg-orange-400"
-                            : doc.tipo === "XLS"
-                            ? "bg-green-500"
-                            : "bg-blue-500"
-                        }`}
+                documentosFiltrados.map((doc, i) => {
+                  const ext = obtenerExtension(doc.archivoURL);
+                  const tipo = extensionToTipo(ext);
+
+                  return (
+                    <div
+                      key={i}
+                      className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border rounded p-3 shadow-sm bg-white mb-3"
+                    >
+                      <div className="flex items-start sm:items-center gap-3">
+                        <div
+                          className={`px-2 py-1 rounded text-xs font-bold text-white ${tipo === "PDF" ? "bg-red-600" :
+                              tipo === "XLS" ? "bg-green-600" :
+                                tipo === "PPT" ? "bg-blue-600" :
+                                  tipo === "DOC" ? "bg-yellow-600" :
+                                    "bg-gray-600"
+                            }`}
+                        >
+                          {tipo}
+                        </div>
+                        <div className="flex flex-col text-sm">
+                          <h3 className="font-medium text-gray-800">{doc.titulo}</h3>
+                          <span className="text-xs text-gray-500">
+                            {new Date(doc.fechaSubida).toLocaleDateString("es-CR")}
+                          </span>
+                        </div>
+                      </div>
+
+                      { /* Boton de descarga */}
+                      <a
+                        href={doc.archivoURL}
+                        download
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="self-start sm:self-auto p-2 rounded-full border border-gray-300 hover:bg-gray-100 transition"
                       >
-                        {doc.tipo}
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-medium text-gray-800">{doc.titulo}</h3>
-                        <p className="text-xs text-gray-500">{doc.fecha}</p>
-                        <p className="text-xs text-gray-700 font-semibold">{doc.nombre}</p>
-                      </div>
+                        <svg
+                          className="h-5 w-5 text-gray-700"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M4 4v16h16V4H4zm4 8h8m-4 4v-4m0 0V8m0 4H8m4 0h4"
+                          />
+                        </svg>
+                      </a>
                     </div>
-                    <button className="mt-2 md:mt-0 p-2 rounded-full border border-gray-300 hover:bg-gray-100 transition">
-                      <svg
-                        className="h-4 w-4 text-gray-700"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M4 4v16h16V4H4zm4 8h8m-4 4v-4m0 0V8m0 4H8m4 0h4"
-                        />
-                      </svg>
-                    </button>
-                  </div>
-                ))
+                  );
+                })
               ) : (
-                <p className="text-gray-500 text-center">No hay documentos disponibles para este filtro.</p>
+                <p className="text-gray-500 text-center text-sm">No hay documentos disponibles para este filtro</p>
               )}
             </div>
           </div>
 
-          <div className="mt-8 bg-white p-4 rounded shadow border">
+          {/* Detalles del mes */}
+          <div className="mt-8 bg-white p-4 rounded shadow border text-sm sm:text-base">
             <h2 className="text-xl font-bold mb-2 text-gray-800">
               Detalles del mes: {decodeURIComponent(month || "")}
             </h2>
