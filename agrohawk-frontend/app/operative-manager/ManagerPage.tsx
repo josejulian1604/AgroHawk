@@ -17,7 +17,18 @@ type Proyecto = {
   imagenRecorrido?: string;
 };
 
-const COLORS = ["#1F384C", "#eee"];
+ const getColorByStatus = (status: string) => {
+    switch (status.toLowerCase()) {
+      case "pendiente":
+        return "#f59e0b"; 
+      case "en revisión":
+        return "#3b82f6"; 
+      case "completado":
+        return "#10b981"; 
+      default:
+        return "#9ca3af"; 
+    }
+  };
 
 export default function ManagerPage() {
   const [proyectos, setProyectos] = useState<Proyecto[]>([]);
@@ -96,7 +107,6 @@ export default function ManagerPage() {
 
       const data = await res.json();
   
-      //alert("Proyecto creado con éxito");
       toast.success("Guardado con éxito", {
         position: "bottom-right",
         autoClose: 3000, 
@@ -105,7 +115,7 @@ export default function ManagerPage() {
       setProyectos((prev) => [...prev, data.proyecto]);
     } catch (err) {
       console.error("Error al crear proyecto:", err);
-      alert("No se pudo crear el proyecto.");
+      toast.error("No se pudo crear el proyecto.");
     }
   };
 
@@ -122,59 +132,63 @@ export default function ManagerPage() {
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {proyectos.map((proyecto) => (
-          <Link
-            to={`/proyecto-gerente/${proyecto._id}`}
-            key={proyecto._id}
-            className="block hover:shadow-md transition"
-          >
-            <div className="bg-white p-4 rounded-lg shadow border flex flex-col md:flex-row justify-between items-center gap-4">
-              <div>
-                <h2 className="text-xl font-semibold text-gray-800">{proyecto.nombre}</h2>
-                <p className="text-sm text-gray-500">
-                  {new Date(proyecto.fecha).toLocaleDateString("es-CR", {
-                    timeZone: "UTC",
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  })}
-                </p>
-                <p className="mt-2 italic text-gray-700">Estado: {proyecto.status}</p>
-                <p className="text text-gray-600 mt-2">
-                  Documentos Cargados: {(proyecto.imagenesBoletas?.length || 0) + (proyecto.imagenRecorrido ? 1 : 0)}
-                </p>
+        {proyectos.map((proyecto) => {
+          const chartColors = [getColorByStatus(proyecto.status), "#eee"];
+
+          return (
+            <Link
+              to={`/proyecto-gerente/${proyecto._id}`}
+              key={proyecto._id}
+              className="block hover:shadow-md transition"
+            >
+              <div className="bg-white p-4 rounded-lg shadow border flex flex-col md:flex-row justify-between items-center gap-4">
+                <div>
+                  <h2 className="text-xl font-semibold text-gray-800">{proyecto.nombre}</h2>
+                  <p className="text-sm text-gray-500">
+                    {new Date(proyecto.fecha).toLocaleDateString("es-CR", {
+                      timeZone: "UTC",
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    })}
+                  </p>
+                  <p className="mt-2 italic text-gray-700">Estado: {proyecto.status}</p>
+                  <p className="text text-gray-600 mt-2">
+                    Documentos Cargados: {(proyecto.imagenesBoletas?.length || 0) + (proyecto.imagenRecorrido ? 1 : 0)}
+                  </p>
+                  
+                  {proyecto.hectareas && (
+                    <div className="mt-4 flex items-center gap-2 border rounded p-2 bg-gray-100 text-gray-800">
+                      <p className="text-xl font-bold">{proyecto.hectareas}+</p>
+                      <p className="text-sm text-gray-600">Hectáreas Fumigadas</p>
+                      <FaMedal className="text-yellow-600 text-lg" />
+                    </div>
+                  )}
+                </div>
                 
-                {proyecto.hectareas && (
-                  <div className="mt-4 flex items-center gap-2 border rounded p-2 bg-gray-100 text-gray-800">
-                    <p className="text-xl font-bold">{proyecto.hectareas}+</p>
-                    <p className="text-sm text-gray-600">Hectáreas Fumigadas</p>
-                    <FaMedal className="text-yellow-600 text-lg" />
-                  </div>
-                )}
+                <div className="w-40 h-40 flex flex-col items-center justify-center bg-gray-50 rounded-lg shadow-inner p-3">
+                  <h4 className="text-sm font-semibold text-gray-600 mb-2">Cultivo Tratado</h4>
+                  <PieChart width={120} height={120}>
+                    <Pie
+                      data={[{ name: "Tratado", value: 100 }, { name: "Restante", value: 0 }]}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={35}
+                      outerRadius={50}
+                      paddingAngle={0}
+                      dataKey="value"
+                    >
+                      {chartColors.map((color, i) => (
+                        <Cell key={`cell-${i}`} fill={color} />
+                      ))}
+                    </Pie>
+                  </PieChart>
+                  <p className="text-xs mt-1 text-gray-500">{proyecto.cultivo} 100%</p>
+                </div>
               </div>
-              
-              <div className="w-40 h-40 flex flex-col items-center justify-center bg-gray-50 rounded-lg shadow-inner p-3">
-                <h4 className="text-sm font-semibold text-gray-600 mb-2">Cultivo Tratado</h4>
-                <PieChart width={120} height={120}>
-                  <Pie
-                    data={[{ name: "Tratado", value: 100 }, { name: "Restante", value: 0 }]}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={35}
-                    outerRadius={50}
-                    paddingAngle={0}
-                    dataKey="value"
-                  >
-                    {COLORS.map((color, i) => (
-                      <Cell key={`cell-${i}`} fill={color} />
-                    ))}
-                  </Pie>
-                </PieChart>
-                <p className="text-xs mt-1 text-gray-500">{proyecto.cultivo} 100%</p>
-              </div>
-            </div>
-          </Link>
-        ))}
+            </Link>
+          );
+        })}
       </div>
 
       {mostrarModal && (

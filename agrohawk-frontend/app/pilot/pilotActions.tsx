@@ -9,6 +9,8 @@ import {
   FaImage,
   FaPlus,
 } from "react-icons/fa";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"
 
 type Proyecto = {
   _id: string;
@@ -95,14 +97,14 @@ export default function PilotProjectPage() {
 
       const data = await res.json();
       if (res.ok) {
-        alert("Imágenes subidas correctamente.");
+        toast.success("Imágenes subidas correctamente.");
         setImagenes([]);
       } else {
-        alert("Error al subir imágenes: " + data.mensaje);
+        toast.error("Error al subir imágenes: " + data.mensaje);
       }
     } catch (error) {
       console.error("Error al subir imágenes:", error);
-      alert("Ocurrió un error al subir las imágenes.");
+      toast.error("Ocurrió un error al subir las imágenes.");
     } finally {
       setUploading(false);
     }

@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import AdminLayout from "../../components/AdminLayout";
 import { FaArrowCircleLeft } from "react-icons/fa";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"
 
 interface Documento {
   _id: string;
@@ -64,12 +66,13 @@ export default function DocumentosPorTipo() {
         setDocAEliminar(null);
       } catch (error: any) {
         console.error(error);
-        alert(error.message || "Error al eliminar");
+        toast.error(error.message || "Error al eliminar");
       }
     };
 
   return (
     <AdminLayout current="Documentos">
+      <ToastContainer position="bottom-right" autoClose={3000} />
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-800 mb-4 capitalize">
           Documentos: {tipo?.replace("-", " ")}

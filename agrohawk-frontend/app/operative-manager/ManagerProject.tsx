@@ -201,11 +201,11 @@ const cargarImagen = (src: string): Promise<HTMLImageElement> => {
       if (!res.ok) throw new Error("Error al subir recorrido");
   
       const data = await res.json();
-      alert("Recorrido agregado correctamente.");
+      toast.success("Recorrido agregado correctamente.");
       setProyecto((prev) => prev ? { ...prev, imagenRecorrido: data.imagenRecorrido } : prev);
     } catch (err) {
       console.error("Error al subir recorrido", err);
-      alert("Error al subir recorrido.");
+      toast.error("Error al subir recorrido.");
     }
   };
 
@@ -226,7 +226,7 @@ const cargarImagen = (src: string): Promise<HTMLImageElement> => {
       setNuevoComentario("");
     } catch (err) {
       console.error("Error:", err);
-      alert("No se pudo agregar el comentario.");
+      toast.error("No se pudo agregar el comentario.");
     }
   };
 
@@ -266,10 +266,10 @@ const cargarImagen = (src: string): Promise<HTMLImageElement> => {
   
       const data = await resEstado.json();
       setProyecto(data.proyecto);
-      alert("Estado actualizado correctamente.");
+      toast.success("Estado actualizado correctamente.");
     } catch (err) {
       console.error("Error al cambiar estado:", err);
-      alert("Ocurrió un error al cambiar el estado.");
+      toast.error("Ocurrió un error al cambiar el estado.");
     }
   };
   
