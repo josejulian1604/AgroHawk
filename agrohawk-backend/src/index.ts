@@ -12,7 +12,6 @@ import dronRoutes from "./routes/dron";
 import proyectoRoutes from "./routes/proyecto";
 import documentoRoutes from "./routes/documentos";
 import resetRoutes from "./routes/reset"
-import path from "path";
 
 
 dotenv.config();
@@ -49,11 +48,3 @@ mongoose
   app.use("/api/proyectos", proyectoRoutes);
   app.use("/api/documentos", documentoRoutes);
   app.use("/api/reset", resetRoutes);
-
-  const frontendPath = path.join(__dirname, "../agrohawk-frontend/dist"); // o 'build' si usas CRA
-app.use(express.static(frontendPath));
-
-// Para que todas las rutas no API respondan con index.html
-app.get("*", (_req, res) => {
-  res.sendFile(path.join(frontendPath, "index.html"));
-});
