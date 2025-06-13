@@ -127,10 +127,22 @@ router.put("/:id", async (req: Request, res: any) => {
 
     // Verificar si otra unidad ya tiene este número de serie
     if (numeroSerie) {
+      if (
+        typeof numeroSerie !== "string" ||
+        numeroSerie.trim().startsWith("$")
+      ) {
+        return res.status(400).json({ mensaje: "Número de serie inválido." });
+      }
+
+      if (typeof id !== "string" || id.trim().startsWith("$")) {
+        return res.status(400).json({ mensaje: "ID inválido." });
+      }
+
       const conflictoSerie = await Dron.findOne({
         numeroSerie,
         _id: { $ne: id },
       });
+
       if (conflictoSerie) {
         return res
           .status(400)
