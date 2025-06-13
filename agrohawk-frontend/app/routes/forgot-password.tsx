@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import { API_BASE } from "../../config"; // Asegúrate de que esta ruta sea correcta
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
@@ -14,7 +15,7 @@ const ForgotPassword = () => {
     try {
       const token = Date.now().toString(36); // Puedes cambiar esto por un token real si lo generas en el backend
 
-      const res = await fetch("/api/reset/reset-password", {
+      const res = await fetch(`${API_BASE}/api/reset/reset-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),

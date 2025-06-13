@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useParams, useNavigate } from "react-router-dom";
+import { API_BASE } from "../../config"; // Asegúrate de que esta ruta sea correcta
 
 const ResetPassword = () => {
   const { id: token } = useParams(); 
@@ -25,7 +26,7 @@ const ResetPassword = () => {
     }
 
     try {
-      const res = await fetch("/api/reset/change-password", {
+      const res = await fetch(`${API_BASE}/api/reset/change-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token, nuevaPassword }),
