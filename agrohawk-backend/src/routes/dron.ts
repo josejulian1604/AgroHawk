@@ -8,7 +8,14 @@ const estadosValidos = ["disponible", "ocupado", "mantenimiento"];
 // Crear un nuevo dron con validaciones
 router.post("/", async (req: Request, res: any) => {
   try {
-    const { modelo, numeroSerie, placa, estado, proyectoAsignado, observaciones } = req.body;
+    const {
+      modelo,
+      numeroSerie,
+      placa,
+      estado,
+      proyectoAsignado,
+      observaciones,
+    } = req.body;
 
     // Validar campos obligatorios
     if (!modelo || !numeroSerie || !placa || !estado) {
@@ -21,6 +28,14 @@ router.post("/", async (req: Request, res: any) => {
     }
 
     // Verificar placa única
+    if (typeof placa !== "string" || placa.trim().startsWith("$")) {
+      return res.status(400).json({ mensaje: "Placa inválida." });
+    }
+    if (typeof numeroSerie !== "string" || numeroSerie.trim().startsWith("$")) {
+      return res.status(400).json({ mensaje: "Número de serie inválido." });
+    }
+
+    // Verificar placa única
     const placaExistente = await Dron.findOne({ placa });
     if (placaExistente) {
       return res.status(400).json({ mensaje: "La placa ya está registrada." });
@@ -29,7 +44,9 @@ router.post("/", async (req: Request, res: any) => {
     // Verificar número de serie único
     const serieExistente = await Dron.findOne({ numeroSerie });
     if (serieExistente) {
-      return res.status(400).json({ mensaje: "El número de serie ya está registrado." });
+      return res
+        .status(400)
+        .json({ mensaje: "El número de serie ya está registrado." });
     }
 
     const nuevoDron = new Dron({
@@ -42,14 +59,14 @@ router.post("/", async (req: Request, res: any) => {
     });
 
     await nuevoDron.save();
-    res.status(201).json({ mensaje: "Dron registrado correctamente", dron: nuevoDron });
-
+    res
+      .status(201)
+      .json({ mensaje: "Dron registrado correctamente", dron: nuevoDron });
   } catch (error) {
     console.error("Error al crear dron:", error);
     res.status(500).json({ mensaje: "Error al registrar el dron", error });
   }
 });
-
 
 // Obtener todos los drones
 router.get("/", async (_req: Request, res: Response) => {
@@ -75,7 +92,14 @@ router.get("/:id", async (req: Request, res: any) => {
 // Actualizar un dron con validaciones
 router.put("/:id", async (req: Request, res: any) => {
   try {
-    const { modelo, numeroSerie, placa, estado, proyectoAsignado, observaciones } = req.body;
+    const {
+      modelo,
+      numeroSerie,
+      placa,
+      estado,
+      proyectoAsignado,
+      observaciones,
+    } = req.body;
     const { id } = req.params;
 
     // Validar estado si se envía
@@ -87,15 +111,22 @@ router.put("/:id", async (req: Request, res: any) => {
     if (placa) {
       const conflictoPlaca = await Dron.findOne({ placa, _id: { $ne: id } });
       if (conflictoPlaca) {
-        return res.status(400).json({ mensaje: "Otra unidad ya tiene esta placa." });
+        return res
+          .status(400)
+          .json({ mensaje: "Otra unidad ya tiene esta placa." });
       }
     }
 
     // Verificar si otra unidad ya tiene este número de serie
     if (numeroSerie) {
-      const conflictoSerie = await Dron.findOne({ numeroSerie, _id: { $ne: id } });
+      const conflictoSerie = await Dron.findOne({
+        numeroSerie,
+        _id: { $ne: id },
+      });
       if (conflictoSerie) {
-        return res.status(400).json({ mensaje: "Otra unidad ya tiene este número de serie." });
+        return res
+          .status(400)
+          .json({ mensaje: "Otra unidad ya tiene este número de serie." });
       }
     }
 
@@ -116,19 +147,20 @@ router.put("/:id", async (req: Request, res: any) => {
       return res.status(404).json({ mensaje: "Dron no encontrado" });
     }
 
-    res.status(200).json({ mensaje: "Dron actualizado correctamente", dron: actualizado });
-
+    res
+      .status(200)
+      .json({ mensaje: "Dron actualizado correctamente", dron: actualizado });
   } catch (error) {
     res.status(500).json({ mensaje: "Error al actualizar el dron", error });
   }
 });
 
-
 // Eliminar un dron
 router.delete("/:id", async (req: Request, res: any) => {
   try {
     const eliminado = await Dron.findByIdAndDelete(req.params.id);
-    if (!eliminado) return res.status(404).json({ mensaje: "Dron no encontrado" });
+    if (!eliminado)
+      return res.status(404).json({ mensaje: "Dron no encontrado" });
     res.status(200).json({ mensaje: "Dron eliminado correctamente" });
   } catch (error) {
     res.status(500).json({ mensaje: "Error al eliminar el dron", error });
