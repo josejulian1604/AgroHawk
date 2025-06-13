@@ -95,7 +95,7 @@ export default function PilotProjectPage() {
     imagenes.forEach((img) => formData.append("imagenes", img));
 
     try {
-      const res = await fetch(`/api/proyectos/${id}/subir-boletas`, {
+      const res = await fetch(`${API_BASE}/api/proyectos/${id}/subir-boletas`, {
         method: "POST",
         body: formData,
       });
