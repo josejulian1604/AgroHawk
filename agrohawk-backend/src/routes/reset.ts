@@ -9,7 +9,7 @@ dotenv.config();
 
 const router = Router();
 
-// 📤 Paso 1: Enviar enlace con token al correo
+// Enviar enlace con token al correo
 router.post("/reset-password", async (req: Request, res: any) => {
   const { email } = req.body;
 
@@ -59,7 +59,7 @@ router.post("/reset-password", async (req: Request, res: any) => {
   }
 });
 
-// 🔐 Paso 2: Recibir nueva contraseña y actualizarla
+// Recibir nueva contraseña y actualizarla
 router.post("/change-password", async (req: Request, res: any) => {
   const { token, nuevaPassword } = req.body;
 
