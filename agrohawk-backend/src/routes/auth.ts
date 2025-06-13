@@ -9,6 +9,10 @@ router.post("/login", async (req: Request, res: any) => {
   const { correo, contraseña } = req.body;
 
   try {
+    if (typeof correo !== "string" || correo.trim().startsWith("$")) {
+      return res.status(400).json({ mensaje: "Correo inválido." });
+    }
+
     const usuario = await Usuario.findOne({ correo });
 
     if (!usuario) {
@@ -28,8 +32,8 @@ router.post("/login", async (req: Request, res: any) => {
         nombre: usuario.nombre,
         apellido1: usuario.apellido1,
         apellido2: usuario.apellido2,
-        cedula: usuario.cedula,   
-        telefono: usuario.telefono
+        cedula: usuario.cedula,
+        telefono: usuario.telefono,
       },
       process.env.JWT_SECRET || "supersecreto",
       { expiresIn: "2h" }
@@ -45,7 +49,7 @@ router.post("/login", async (req: Request, res: any) => {
         apellido2: usuario.apellido2,
         correo: usuario.correo,
         rol: usuario.rol,
-        cedula: usuario.cedula,    
+        cedula: usuario.cedula,
         telefono: usuario.telefono,
       },
     });

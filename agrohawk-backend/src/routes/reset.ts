@@ -14,6 +14,10 @@ router.post("/reset-password", async (req: Request, res: any) => {
   const { email } = req.body;
 
   try {
+    if (typeof email !== "string" || email.trim().startsWith("$")) {
+      return res.status(400).json({ mensaje: "Correo inválido." });
+    }
+
     const usuario = await Usuario.findOne({ correo: email });
 
     if (!usuario) {
@@ -27,7 +31,6 @@ router.post("/reset-password", async (req: Request, res: any) => {
     );
 
     const resetUrl = `${process.env.FRONTEND_BASE_URL}/reset-password/${token}`;
-
 
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -61,12 +64,14 @@ router.post("/change-password", async (req: Request, res: any) => {
   const { token, nuevaPassword } = req.body;
 
   if (!token || !nuevaPassword) {
-    return res.status(400).json({ mensaje: "Token y nueva contraseña requeridos" });
+    return res
+      .status(400)
+      .json({ mensaje: "Token y nueva contraseña requeridos" });
   }
 
   try {
     const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
-    const usuario = await Usuario.findById(decoded.id) as IUsuario;
+    const usuario = (await Usuario.findById(decoded.id)) as IUsuario;
 
     if (!usuario) {
       return res.status(404).json({ mensaje: "Usuario no encontrado" });
@@ -77,8 +82,9 @@ router.post("/change-password", async (req: Request, res: any) => {
     usuario.contraseña = hashedPassword;
 
     await usuario.save();
-    return res.status(200).json({ mensaje: "Contraseña actualizada correctamente" });
-
+    return res
+      .status(200)
+      .json({ mensaje: "Contraseña actualizada correctamente" });
   } catch (error) {
     console.error("Error al actualizar contraseña:", error);
     return res.status(401).json({ mensaje: "Token inválido o expirado" });

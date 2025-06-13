@@ -109,6 +109,14 @@ router.put("/:id", async (req: Request, res: any) => {
 
     // Verificar si otra unidad ya tiene esta placa
     if (placa) {
+      if (typeof placa !== "string" || placa.trim().startsWith("$")) {
+        return res.status(400).json({ mensaje: "Placa inválida." });
+      }
+
+      if (typeof id !== "string" || id.trim().startsWith("$")) {
+        return res.status(400).json({ mensaje: "ID inválido." });
+      }
+
       const conflictoPlaca = await Dron.findOne({ placa, _id: { $ne: id } });
       if (conflictoPlaca) {
         return res
