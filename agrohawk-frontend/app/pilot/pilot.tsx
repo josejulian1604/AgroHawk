@@ -4,6 +4,7 @@ import { PieChart, Pie, Cell } from "recharts";
 import { Link } from "react-router-dom";
 import { FaBars, FaFolderOpen, FaTimes } from "react-icons/fa";
 import { API_BASE } from "../../config";
+import { useNavigate } from "react-router-dom";
 
 // Tipos
 const COLORS = ["#1F384C", "#eee"];
@@ -53,6 +54,7 @@ export default function Pilot() {
         return rol.charAt(0).toUpperCase() + rol.slice(1);
     }
   };
+  const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -144,7 +146,7 @@ export default function Pilot() {
               <button
                 onClick={() => {
                   localStorage.removeItem("token");
-                  window.location.href = "/login";
+                  navigate("/login");
                 }}
                 className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
               >

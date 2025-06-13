@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
+import { useNavigate } from "react-router-dom";
 
 type DecodedToken = {
   nombre: string;
@@ -10,6 +11,7 @@ export default function Navbar() {
   const [nombreUsuario, setNombreUsuario] = useState("");
   const [rolUsuario, setRolUsuario] = useState("");
   const [menuAbierto, setMenuAbierto] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -50,7 +52,7 @@ export default function Navbar() {
             <button
               onClick={() => {
                 localStorage.removeItem("token");
-                window.location.href = "/login";
+                navigate("/login");
               }}
               className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
             >

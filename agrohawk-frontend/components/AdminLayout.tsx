@@ -82,7 +82,7 @@ export default function AdminLayout({ children, current }: Props) {
               <button
                 onClick={() => {
                   localStorage.removeItem("token");
-                  window.location.href = "/login";
+                  navigate("/login");
                 }}
                 className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
               >

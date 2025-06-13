@@ -9,6 +9,7 @@ import {
   FaPlus,
 } from "react-icons/fa";
 import { API_BASE } from "../../config";
+import { useNavigate } from "react-router-dom";
 
 type Proyecto = {
   _id: string;
@@ -121,6 +122,8 @@ export default function PilotProjectPage() {
     setImagenes([]);
   };
 
+  const navigate = useNavigate();
+
   return (
     <div className="flex flex-col min-h-screen">
       <nav className="bg-[#1F384C] text-white px-6 py-4 flex items-center justify-between">
@@ -152,7 +155,7 @@ export default function PilotProjectPage() {
               <button
                 onClick={() => {
                   localStorage.removeItem("token");
-                  window.location.href = "/login";
+                  navigate("/login");
                 }}
                 className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
               >
