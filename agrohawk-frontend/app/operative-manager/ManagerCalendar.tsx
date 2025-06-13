@@ -27,14 +27,16 @@ export default function Calendar() {
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [pilotos, setPilotos] = useState<any[]>([]);
   const [drones, setDrones] = useState<any[]>([]);
-  const [nuevoProyecto, setNuevoProyecto] = useState({
+  const formularioInicial = {
     nombre: '',
     cliente: '',
     ubicacion: '',
     fecha: '',
     piloto: '',
     dron: '',
-  });
+  };
+  const [nuevoProyecto, setNuevoProyecto] = useState(formularioInicial);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -166,7 +168,10 @@ export default function Calendar() {
           <div className="bg-white p-6 rounded-lg w-full max-w-md shadow-lg relative border border-gray-800">
             <button
               className="absolute top-3 right-3 text-gray-600 hover:text-black"
-              onClick={() => setMostrarFormulario(false)} // Cerrar formulario
+              onClick={() => {
+                setMostrarFormulario(false);
+                setNuevoProyecto(formularioInicial);
+              }}
             >
               ✕
             </button>
@@ -268,7 +273,10 @@ export default function Calendar() {
               <div className="flex justify-end gap-4">
                 <button
                   type="button"
-                  onClick={() => setMostrarFormulario(false)}
+                  onClick={() => {
+                    setMostrarFormulario(false);
+                    setNuevoProyecto(formularioInicial);
+                  }}
                   className="bg-red-700 hover:bg-red-500 text-white px-4 py-2 rounded"
                 >
                   Cancelar

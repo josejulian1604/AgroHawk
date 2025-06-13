@@ -71,7 +71,7 @@ router.post("/", async (req: Request, res: any) => {
 // Obtener todos los drones
 router.get("/", async (_req: Request, res: Response) => {
   try {
-    const drones = await Dron.find();
+    const drones = await Dron.find().populate("proyectoAsignado", "nombre");
     res.status(200).json(drones);
   } catch (error) {
     res.status(500).json({ mensaje: "Error al obtener drones", error });

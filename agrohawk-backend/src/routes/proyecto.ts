@@ -48,6 +48,12 @@ router.post("/", async (req: Request, res: any) => {
     });
 
     await nuevoProyecto.save();
+
+    await Dron.findByIdAndUpdate(dron, {
+      proyectoAsignado: nuevoProyecto._id,
+      estado: "ocupado",
+    });
+
     res.status(201).json({ mensaje: "Proyecto creado con éxito", proyecto: nuevoProyecto });
   } catch (error) {
     console.error("Error al crear proyecto:", error);
@@ -337,6 +343,15 @@ router.put("/:id", async (req: Request, res: any) => {
     if (!actualizado) {
       return res.status(404).json({ mensaje: "Proyecto no encontrado." });
     }
+    if (
+      actualizado.status?.toLowerCase() === "completado" &&
+      actualizado.dron
+    ) {
+      await Dron.findByIdAndUpdate(actualizado.dron, {
+        proyectoAsignado: null,
+        estado: "disponible",
+      });
+    }
 
     res.status(200).json({ mensaje: "Proyecto actualizado", proyecto: actualizado });
   } catch (error) {
@@ -378,6 +393,14 @@ router.delete("/:id", async (req: Request, res: any) => {
       const filename = partes.at(-1);
       const publicId = `${folder}/${filename}`;
       await cloudinary.uploader.destroy(publicId, { resource_type: "raw" });
+    }
+
+    // Desasociar el dron asignado al proyecto
+    if (proyecto.dron) {
+      await Dron.findByIdAndUpdate(proyecto.dron, {
+        proyectoAsignado: null,
+        estado: "disponible",
+      });
     }
 
     // Eliminar el proyecto de Mongo

@@ -35,7 +35,18 @@ export default function ManagerPage() {
   const [proyectos, setProyectos] = useState<Proyecto[]>([]);
   const [mostrarModal, setMostrarModal] = useState(false);
   const abrirModal = () => setMostrarModal(true);
-  const cerrarModal = () => setMostrarModal(false);
+  const cerrarModal = () => {
+    setMostrarModal(false);
+    setNuevoProyecto(formularioInicial);
+  };
+  const formularioInicial: NuevoProyecto = {
+  nombre: "",
+  cliente: "",
+  ubicacion: "",
+  fecha: "",
+  piloto: "",
+  dron: "",
+};
 
   interface NuevoProyecto {
     nombre: string;
@@ -46,14 +57,7 @@ export default function ManagerPage() {
     dron: string;
   }
 
-  const [nuevoProyecto, setNuevoProyecto] = useState<NuevoProyecto>({
-    nombre: "",
-    cliente: "",
-    ubicacion: "",
-    fecha: "",
-    piloto: "",
-    dron: "",
-  });
+  const [nuevoProyecto, setNuevoProyecto] = useState<NuevoProyecto>(formularioInicial);
   
   const [pilotos, setPilotos] = useState<any[]>([]);
   const [drones, setDrones] = useState<any[]>([]);

@@ -5,12 +5,17 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { API_BASE } from "../../config";
 
+type ProyectoAsignado = {
+  _id: string;
+  nombre: string;
+} | null;
+
 type Dron = {
   _id: string;
   modelo: string;
   numeroSerie: string;
   placa: string;
-  proyectoAsignado: string;
+  proyectoAsignado: ProyectoAsignado;
   estado: "disponible" | "ocupado" | "mantenimiento";
   observaciones?: string;
 };
@@ -25,7 +30,7 @@ export default function DronesInventory() {
     modelo: "",
     numeroSerie: "",
     placa: "",
-    proyectoAsignado: "ninguno",
+    proyectoAsignado: "",
     estado: "disponible",
     observaciones: "",
   };
@@ -71,7 +76,9 @@ export default function DronesInventory() {
         modelo: dron.modelo,
         numeroSerie: dron.numeroSerie,
         placa: dron.placa,
-        proyectoAsignado: dron.proyectoAsignado,
+        proyectoAsignado: typeof dron.proyectoAsignado === "object" && dron.proyectoAsignado !== null
+        ? dron.proyectoAsignado._id
+        : "",
         estado: dron.estado,
         observaciones: dron.observaciones || "",
       });
@@ -175,7 +182,10 @@ export default function DronesInventory() {
             {/* Columna 2 */}
             <div className="min-w-[180px]">
               <p><span className="font-bold">Número de Serie:</span> {dron.numeroSerie}</p>
-              <p><span className="font-bold">Proyecto Asignado:</span> {dron.proyectoAsignado || "Ninguno"}</p>
+              <p>
+                <span className="font-bold">Proyecto Asignado:</span>{" "}
+                {dron.proyectoAsignado?.nombre || "Ninguno"}
+              </p>
             </div>
 
             {/* Columna 3 */}
